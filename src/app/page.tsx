@@ -148,7 +148,7 @@ export default function Home() {
             </div>
 
             {/* Headline */}
-            <h1 className="text-6xl sm:text-7xl md:text-9xl font-black tracking-tighter mb-8 hero-anim leading-[0.9] text-white">
+            <h1 className="text-4xl sm:text-7xl md:text-9xl font-black tracking-tighter mb-8 hero-anim leading-[0.9] text-white">
               Smarter<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 animate-gradient">
                 Healthcare
@@ -405,7 +405,7 @@ export default function Home() {
               <div className="text-center space-y-6 pt-4 w-full border-t border-white/5">
                 <button className="w-full mt-6 py-6 rounded-3xl bg-slate-900/80 border border-white/10 flex items-center justify-center gap-4 hover:bg-slate-900 transition-all group/btn shadow-xl">
                   <Cpu className="w-6 h-6 text-slate-500 group-hover/btn:text-blue-400 transition-colors" />
-                  <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] group-hover/btn:text-white transition-colors">Technical Protocol</span>
+                  <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.1em] md:tracking-[0.4em] group-hover/btn:text-white transition-colors">Technical Protocol</span>
                 </button>
 
                 <div className="pt-4">

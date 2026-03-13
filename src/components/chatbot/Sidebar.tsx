@@ -43,10 +43,10 @@ export default function Sidebar({
                 {isOpen ? <ChevronLeft /> : <MessageSquare />}
             </button>
 
-            {/* Sidebar Container - Flex Child */}
+            {/* Sidebar Container - Fixed on mobile, Relative on desktop */}
             <aside className={cn(
-                "w-80 h-screen transition-all duration-500 z-40 relative flex-shrink-0 bg-slate-950/50 border-r border-white/5",
-                !isOpen && "w-0 overflow-hidden opacity-0"
+                "fixed lg:relative h-screen transition-all duration-500 z-40 bg-slate-950/50 border-r border-white/5",
+                isOpen ? "w-72 lg:w-80 opacity-100" : "w-0 overflow-hidden opacity-0 pointer-events-none lg:pointer-events-auto"
             )}>
                 <div className="h-full glass-card bg-slate-900/80 border border-white/10 shadow-2xl flex flex-col overflow-hidden rounded-[40px]">
                     {/* Header */}

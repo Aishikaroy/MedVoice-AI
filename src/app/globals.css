@@ -213,3 +213,45 @@ body::before, body::after {
     transition-duration: 300ms;
   }
 }
+
+/* Mobile responsiveness patch */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  main, .container, section, .glass-card {
+    width: 100% !important;
+    max-width: 100vw !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  /* Fixes large text cutting off */
+  h1 {
+    font-size: 2.5rem !important;
+    line-height: 1.1 !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+    word-wrap: break-word;
+  }
+
+  /* Ensures images/videos don't exceed screen width */
+  img, video, iframe, canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Flex wrap for mobile layouts */
+  .flex-row-mobile-wrap {
+    flex-wrap: wrap !important;
+  }
+}

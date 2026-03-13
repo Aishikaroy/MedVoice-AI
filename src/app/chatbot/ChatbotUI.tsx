@@ -847,15 +847,15 @@ export default function ChatbotUI({
                     </div>
 
                     {/* Status Bar / Dashboard Header */}
-                    <header className="w-full max-w-6xl bg-slate-950/40 border border-white/10 rounded-[32px] p-2 flex flex-col md:flex-row items-center justify-between shadow-2xl backdrop-blur-3xl ring-1 ring-white/5 no-print">
+                    <header className="w-full max-w-6xl bg-slate-950/40 border border-white/10 rounded-[32px] p-2 flex flex-col md:flex-row items-center justify-between shadow-2xl backdrop-blur-3xl ring-1 ring-white/5 no-print gap-4 md:gap-0">
                         {/* 1. Left: User Profile Section */}
-                        <div className="flex items-center gap-4 px-6 border-r border-white/10 h-10">
+                        <div className="flex items-center gap-4 px-6 border-b md:border-b-0 md:border-r border-white/10 w-full md:w-auto py-4 md:py-0 h-auto md:h-10">
                             <div className="w-9 h-9 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center relative overflow-hidden group">
                                 <UserCircle2 className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform relative z-10" />
                                 <div className="absolute inset-0 bg-blue-500/5 animate-pulse" />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-[11px] font-black text-slate-100 tracking-tight leading-none">{user?.email || 'aishikaroy2003@gmail.com'}</span>
+                                <span className="text-[11px] font-black text-slate-100 tracking-tight leading-none truncate max-w-[150px]">{user?.email || 'aishikaroy2003@gmail.com'}</span>
                                 <div className="flex items-center gap-1.5 mt-1">
                                     <ShieldCheck className="w-3 h-3 text-emerald-500" />
                                     <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest leading-none">SECURE SESSION</span>
@@ -864,7 +864,7 @@ export default function ChatbotUI({
                         </div>
 
                         {/* 2. Middle: System Status Section */}
-                        <div className="flex items-center gap-4 px-10 border-r border-white/10 h-10">
+                        <div className="flex items-center gap-4 px-6 md:px-10 border-b md:border-b-0 md:border-r border-white/10 w-full md:w-auto py-4 md:py-0 h-auto md:h-10">
                             <div className="relative">
                                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
                                 <div className="absolute -inset-1 rounded-full border border-emerald-400/20 animate-ping opacity-50" />
@@ -876,7 +876,7 @@ export default function ChatbotUI({
                         </div>
 
                         {/* 3. Right: Control Center Section */}
-                        <div className="flex items-center gap-3 pr-2 pl-6">
+                        <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 pr-2 pl-6 py-4 md:py-0">
                             {/* Location Module */}
                             <div className="flex items-center gap-3 bg-slate-900 border border-white/5 rounded-2xl px-4 py-2 group hover:border-blue-500/30 transition-all cursor-pointer">
                                 <MapPin className="w-3.5 h-3.5 text-blue-500 group-hover:scale-110 transition-transform" />
@@ -913,12 +913,12 @@ export default function ChatbotUI({
                     </header>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-8 relative w-full items-start max-w-7xl mx-auto px-4">
+                <div className="flex flex-col lg:flex-row gap-8 relative w-full items-start max-w-7xl mx-auto px-0 md:px-4">
                     
                     {/* Left Column: Input and Diagnostics */}
                     <div className="space-y-8">
                         {/* Describe Symptoms Card */}
-                        <div className="glass-card bg-slate-900/60 border border-white/5 shadow-2xl rounded-3xl p-8 anim-item relative overflow-hidden">
+                        <div className="glass-card bg-slate-900/60 border border-white/5 shadow-2xl rounded-3xl p-6 md:p-8 anim-item relative overflow-hidden">
                             <h2 className="text-xl font-black text-white flex items-center gap-3 mb-8 uppercase tracking-tighter">
                                 <Activity className="w-6 h-6 text-blue-400" />
                                 Describe Symptoms
@@ -955,7 +955,7 @@ export default function ChatbotUI({
                         </div>
 
                         {/* Upload Prescription Card */}
-                        <div className="glass-card bg-slate-900/60 border border-white/5 shadow-2xl rounded-3xl p-8 anim-item">
+                        <div className="glass-card bg-slate-900/60 border border-white/5 shadow-2xl rounded-3xl p-6 md:p-8 anim-item">
                             <h2 className="text-xl font-black text-white flex items-center gap-3 mb-8 uppercase tracking-tighter">
                                 <FileText className="w-6 h-6 text-purple-400" />
                                 Upload Prescription <span className="text-[10px] text-slate-500 normal-case ml-2">(Optional)</span>
@@ -1017,7 +1017,7 @@ export default function ChatbotUI({
                         </div>
 
                         {/* AI Analysis Box */}
-                        <div className="glass-card bg-slate-900/60 border border-white/5 shadow-2xl rounded-3xl p-8 anim-item flex flex-col min-h-[500px]">
+                        <div className="glass-card bg-slate-900/60 border border-white/5 shadow-2xl rounded-3xl p-6 md:p-8 anim-item flex flex-col min-h-[400px] md:min-h-[500px]">
                             <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
                                 <h2 className="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tighter">
                                     <DynamicSpecialtyIcon className={cn("w-6 h-6", specialtyIconColor)} />
@@ -1088,7 +1088,7 @@ export default function ChatbotUI({
                                     Suggested Remedies
                                 </h3>
                                 
-                                <div className="flex bg-slate-950/80 p-1.5 rounded-2xl mb-8 border border-white/5 max-w-[340px] no-print">
+                                <div className="flex bg-slate-950/80 p-1.5 rounded-2xl mb-8 border border-white/5 w-full max-w-[340px] no-print mx-auto md:mx-0">
                                     <button onClick={() => setTreatmentTab('home')} className={`flex-1 py-2.5 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest ${treatmentTab === 'home' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-500 hover:text-slate-300'}`}>Home Remedies</button>
                                     <button onClick={() => setTreatmentTab('medical')} className={`flex-1 py-2.5 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest ${treatmentTab === 'medical' ? 'bg-slate-900 text-slate-400 shadow-lg shadow-indigo-500/20' : 'text-slate-500 hover:text-slate-300'}`}>Medical Treatment</button>
                                 </div>
@@ -1109,7 +1109,7 @@ export default function ChatbotUI({
 
                         {/* Recommended Doctors Section */}
                         {(hasAnalysis || isAnalyzing || localIsAnalyzing) && (
-                            <div className="glass-card bg-slate-900/60 border border-white/5 shadow-2xl rounded-3xl p-8 anim-item">
+                            <div className="glass-card bg-slate-900/60 border border-white/5 shadow-2xl rounded-3xl p-6 md:p-8 anim-item">
                                 <div className="flex items-center gap-3 mb-8 pb-4 border-b border-white/5">
                                     <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
                                         <div className="w-1 h-1 rounded-full bg-blue-500" />
