@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import ChatbotUI from './ChatbotUI';
-import Sidebar from '@/components/chatbot/Sidebar';
-import { ShieldCheck, Clock, Zap } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import dynamicImport from 'next/dynamic';
+
+// skip server-side rendering for browser-specific APIs
+const ChatbotUI = dynamicImport(() => import('./ChatbotUI'), { ssr: false });
+
+export const dynamic = 'force-dynamic';
 
 export default function ChatbotPage() {
     const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
