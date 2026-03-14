@@ -142,9 +142,48 @@ export default function ChatbotUI({
     const [isBackendConnected, setIsBackendConnected] = useState(true);
     const [isInitializing, setIsInitializing] = useState(false);
     const [localIsAnalyzing, setLocalIsAnalyzing] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
+
+    // ── Backend URL: environment-aware ─────────────────────────────────────
+    // On localhost: points directly to the FastAPI server.
+    // On Vercel production: NEXT_PUBLIC_BACKEND_URL is left empty → requests
+    // go through the /backend proxy rewrite defined in vercel.json / next.config.js
+    // so the real backend URL is never exposed to the browser.
+    const IS_PRODUCTION = typeof window !== 'undefined' &&
+        !['localhost', '127.0.0.1'].includes(window.location.hostname);
+    const BACKEND_URL = IS_PRODUCTION
+        ? (process.env.NEXT_PUBLIC_BACKEND_URL || '')
+        : (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000');
+
+    // ── Mock Fallback (used when backend is offline for demo purposes) ────────
+    const getMockResponse = (symptom: string) => ({
+        specialty: 'General Physician',
+        diagnosis: `Preliminary assessment of reported symptoms: "${symptom.substring(0, 100)}". The live backend is currently offline — this is a demo-mode clinical simulation. Connect to ${BACKEND_URL} for full AI analysis.`,
+        clinical_evaluation: {
+            symptom_pathophysiology: `The reported symptoms suggest involvement of the upper respiratory tract and systemic inflammatory pathways. Viral or bacterial antigens trigger mast cell degranulation, releasing histamine and prostaglandins that mediate vasodilation and increased vascular permeability — presenting as congestion, fever, and malaise. Activation of the hypothalamic thermoregulatory center by IL-1β and TNF-α cytokines elevates the core body temperature set-point, producing fever. Concurrent activation of nociceptors by bradykinin and substance P explains musculoskeletal pain. This is a demo-mode response; connect the backend AI for patient-specific pathophysiology.`,
+            differential_considerations: `1. Viral Upper Respiratory Infection (URI): The most common etiology; rhinovirus, influenza A/B, and coronaviruses account for >80% of acute presentations matching this symptom profile. 2. Acute Bacterial Sinusitis: Consider if symptoms persist beyond 10 days or worsen after initial improvement, with purulent nasal discharge and facial pressure. 3. Allergic Rhinitis: Seasonal or perennial allergen exposure can mimic URI symptoms; distinguish by the absence of fever and presence of bilateral clear rhinorrhea with itching. 4. Influenza (Type A or B): Rapid onset, high fever (>38.5°C), and prominent myalgia distinguish flu from the common cold. 5. COVID-19: Must be ruled out given overlapping symptom spectrum including fever, fatigue, and respiratory symptoms.
+
+DISCLAIMER: This AI output is for educational purposes only and does NOT constitute a medical diagnosis. Always consult a licensed physician.`,
+            urgency_triaging: `ROUTINE — The described symptom constellation is consistent with a self-limiting, benign etiology not typically requiring emergency intervention. Most adults recover from viral URI within 7–10 days with supportive care. However, escalate to URGENT if fever exceeds 39.5°C, dyspnea or oxygen saturation drops below 94%, or symptoms worsen after day 5. Seek EMERGENCY care immediately if there is stridor, severe chest pain, altered consciousness, or signs of sepsis (e.g., hypotension, rigors).`,
+            pharmacist_notes: `In a US pharmacy context, first-line OTC options include acetaminophen (Tylenol) or ibuprofen (Advil/Motrin) for fever and analgesia; decongestants such as pseudoephedrine (Sudafed, behind-the-counter) or phenylephrine for nasal congestion; and first-generation antihistamines like diphenhydramine (Benadryl) for symptom relief. Guaifenesin (Mucinex) is an FDA-approved expectorant for mucus mobilization. CAUTIONS: Pseudoephedrine is contraindicated in patients on MAOIs or with uncontrolled hypertension. NSAIDs should be used with caution in patients with renal impairment or peptic ulcer disease. If an antibiotic is prescribed (e.g., amoxicillin-clavulanate for confirmed bacterial sinusitis), counsel patients on completing the full course and potential GI side effects.`
+        },
+        home_remedies: [
+            { title: 'Thermal Hydration Protocol', description: 'Consume 500ml of warm water every 2 hours to maintain electrolyte balance and support mucus clearance.', clinical_logic: 'Adequate hydration supports mucosal immune defense and systemic detoxification pathways by maintaining optimal plasma osmolality.' },
+            { title: 'Controlled Nasal Irrigation', description: 'Use isotonic saline (0.9% NaCl) nasal rinse twice daily for 3 minutes per nostril using a Neti pot or squeeze bottle.', clinical_logic: 'Saline irrigation mechanically removes viral particles and reduces mucosal inflammation per JAMA Otolaryngology guidelines (Grade A evidence).' },
+            { title: 'Supine Elevation Posture', description: 'Elevate head of bed to 30° angle during sleep using 2 standard pillows to reduce nighttime symptoms.', clinical_logic: 'Positional therapy reduces nocturnal symptoms by improving sino-nasal drainage via gravitational effect and reducing post-nasal drip.' }
+        ],
+        medical_treatments: [
+            { title: 'Acetaminophen (Analgesic/Antipyretic)', description: 'Take as directed on packaging. Do not exceed 4g/day total across all products. Take with food if GI sensitivity is present.', clinical_logic: 'First-line analgesic per WHO Essential Medicines List. Inhibits prostaglandin synthesis centrally without significant GI mucosal irritation.' },
+            { title: 'Cetirizine (2nd-Gen Antihistamine)', description: 'Take 10mg once daily at bedtime for 5–7 days to reduce histamine-mediated symptoms.', clinical_logic: 'Selective H1-receptor antagonist with minimal BBB penetration, minimizing sedation — evidence grade A per Cochrane Systematic Review.' },
+            { title: 'Guaifenesin (Expectorant)', description: 'Take every 4 hours with a full glass of water (240ml) to thin and mobilize respiratory secretions.', clinical_logic: 'FDA-approved mucolytic that reduces sputum viscosity by increasing hydration of respiratory secretions (FDA Monograph Category I).' }
+        ],
+        doctors: [],
+        chat_response: 'Demo mode active — backend offline. A comprehensive clinical simulation has been generated for your review.',
+        booking_requested: false
+    });
 
     const chat = useChat({
-        api: 'http://127.0.0.1:8000/chat',
+        api: '/api/chat',
         body: {
             conversation_id: selectedConversationId,
             user_id: user?.id || 'demo_user',
@@ -197,9 +236,10 @@ export default function ChatbotUI({
     const INITIAL_ANALYSIS = {
         specialty: 'General Physician',
         diagnosis: '',
-        home_remedies: [],
-        medical_treatments: [],
-        doctors: []
+        clinical_evaluation: null as any,
+        home_remedies: [] as any[],
+        medical_treatments: [] as any[],
+        doctors: [] as any[]
     };
     const [structuredAnalysis, setStructuredAnalysis] = useState<any>(INITIAL_ANALYSIS);
 
@@ -281,7 +321,7 @@ export default function ChatbotUI({
         const checkConnection = async () => {
             try {
                 // Primary health check
-                const res = await fetch('http://127.0.0.1:8000/api/health', { signal: AbortSignal.timeout(2000) });
+                const res = await fetch('/api/health', { signal: AbortSignal.timeout(2000) });
                 
                 if (isMounted) {
                     setIsBackendConnected(true);
@@ -321,9 +361,10 @@ export default function ChatbotUI({
         const defaultData = {
             specialty: 'Diagnostic Specialist',
             diagnosis: 'Synchronizing with Diagnostic Engine...',
-            home_remedies: [],
-            medical_treatments: [],
-            doctors: []
+            clinical_evaluation: null as any,
+            home_remedies: [] as any[],
+            medical_treatments: [] as any[],
+            doctors: [] as any[]
         };
 
         if (!content || typeof content !== 'string') return defaultData;
@@ -366,9 +407,13 @@ export default function ChatbotUI({
             const home = data.home_remedies || []; 
             const medical = data.medical_treatments || [];
 
+            // Parse clinical_evaluation sub-object if present
+            const clinicalEval = data.clinical_evaluation || null;
+
             return {
                 specialty: data.specialty || 'Diagnostic Specialist',
                 diagnosis: data.diagnosis || data.analysis || 'High-precision evaluation complete.',
+                clinical_evaluation: clinicalEval,
                 home_remedies: Array.isArray(home) ? home.map(mapRemedy) : [],
                 medical_treatments: Array.isArray(medical) ? medical.map(mapRemedy) : [],
                 doctors: (Array.isArray(data.doctors) && data.doctors.length > 0) ? data.doctors.map(mapDoctor) : []
@@ -592,38 +637,105 @@ export default function ChatbotUI({
         recognition.start();
     };
 
-    const exportToPDF = () => {
+    const exportToPDF = (e?: React.MouseEvent) => {
+        // Block any default navigation
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+
         const element = document.getElementById('pdf-export-content');
-        if (!element) return;
-        
-        // Temporarily modify element for capture
+        if (!element || isExporting) return;
+
+        setIsExporting(true);
+
+        // Inject print-only styles so hidden PDF sections become visible
         const style = document.createElement('style');
+        style.id = 'medvoice-pdf-style';
         style.innerHTML = `
             #pdf-export-content .no-print { display: none !important; }
-            #pdf-export-content .print-only-header { display: flex !important; }
+            #pdf-export-content .print-only-header { display: flex !important; flex-direction: column; align-items: center; }
             #pdf-export-content .print-only-footer { display: flex !important; }
-            #pdf-export-content .print-remedies { display: flex !important; }
-            #pdf-export-content { background: #020617 !important; border: none !important; color: white !important; padding: 20mm !important; }
-            .glass-card { background: rgba(30, 41, 59, 0.4) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; }
+            #pdf-export-content .print-remedies { display: flex !important; flex-direction: column; gap: 20px; }
+            #pdf-export-content .clinical-logic-pdf { display: block !important; }
+            #pdf-export-content { background: #020617 !important; color: white !important; padding: 12mm !important; }
+            .glass-card { background: rgba(15,23,42,0.9) !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+            p, li, span { line-height: 1.6 !important; }
         `;
         document.head.appendChild(style);
-        
+
+        const filename = `MedVoice_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+
         const opt = {
-            margin:       0,
-            filename:     `MED-VOICE_Diagnostic_Report.pdf`,
-            image:        { type: 'jpeg' as const, quality: 0.98 },
-            html2canvas:  { 
-                scale: 2, 
-                useCORS: true, 
+            margin:      [8, 10, 8, 10] as [number, number, number, number], // top, right, bottom, left (mm)
+            filename,
+            image:       { type: 'jpeg' as const, quality: 0.96 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
                 backgroundColor: '#020617',
-                windowWidth: 1200 
+                windowWidth: 1200,
+                logging: false,
+                // Required on Vercel — prevents tainted-canvas SecurityErrors
+                allowTaint: false,
             },
-            jsPDF:        { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
+            jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
         };
-        
-        html2pdf().set(opt).from(element).save().then(() => {
-            document.head.removeChild(style);
-        });
+
+        html2pdf().set(opt).from(element).output('blob')
+            .then((pdfBlob: Blob) => {
+                let blobUrl: string | null = null;
+                try {
+                    blobUrl = URL.createObjectURL(pdfBlob);
+                } catch (_) {
+                    // URL.createObjectURL is unavailable in some restricted environments;
+                    // fall back to a direct data-URI download.
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const a = document.createElement('a');
+                        a.href = reader.result as string;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    };
+                    reader.readAsDataURL(pdfBlob);
+                    return;
+                }
+
+                // Attempt to open in a new tab; fall back to anchor download
+                const newTab = window.open(blobUrl, '_blank');
+                if (newTab) {
+                    // Tab opened — also offer a download via anchor so the user
+                    // can save the file even if the browser only previews it.
+                    const a = document.createElement('a');
+                    a.href   = blobUrl;
+                    a.download = filename;
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } else {
+                    // Popup blocked (common on mobile / strict browsers) — go
+                    // straight to a forced download.
+                    const a = document.createElement('a');
+                    a.href   = blobUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+
+                // Free the blob URL after 90 s
+                setTimeout(() => { if (blobUrl) URL.revokeObjectURL(blobUrl); }, 90000);
+            })
+            .catch((err: any) => {
+                console.error('[PDF Export] Generation failed:', err);
+                // Surface a user-readable error instead of silent failure
+                alert('PDF generation failed. Please try again or use the browser\'s Print function (Ctrl/Cmd + P).');
+            })
+            .finally(() => {
+                const injectedStyle = document.getElementById('medvoice-pdf-style');
+                if (injectedStyle) document.head.removeChild(injectedStyle);
+                setIsExporting(false);
+            });
     };
 
     const handleSend = async (e: React.MouseEvent | React.FormEvent | null, customSymptomText?: string) => {
@@ -639,8 +751,9 @@ export default function ChatbotUI({
         }
 
         setLocalIsAnalyzing(true);
-        setStructuredAnalysis(INITIAL_ANALYSIS); // Reset to clear previous results immediately
-        setDebugAnalysis(''); // Reset previous debug analysis
+        // NOTE: symptomText is intentionally NOT cleared here — preserves Description Box per requirement
+        setStructuredAnalysis(INITIAL_ANALYSIS);
+        setDebugAnalysis('');
 
         try {
             console.log('[DEBUG] handleSend triggered:', { textToAnalyzeLength: textToAnalyze.length, hasFile: !!uploadedFile });
@@ -696,10 +809,11 @@ export default function ChatbotUI({
                 
                 console.log('FRONTEND_SENDING:', payload);
                 
-                const response = await fetch('http://127.0.0.1:8000/chat', {
+                const response = await fetch(`${BACKEND_URL}/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: AbortSignal.timeout(15000) // 15s hard timeout
                 });
                 
                 if (!response.ok) {
@@ -736,19 +850,20 @@ export default function ChatbotUI({
                     ...newHistory
                 ]);
 
-                setSymptomText('');
                 setLocalIsAnalyzing(false);
                 return; // Success
             } catch (appendError) {
-                console.error('[DEBUG] fetch() failed:', appendError);
-                // Trigger fallback UI Error State
-                setStructuredAnalysis({
-                    specialty: 'System Error',
-                    diagnosis: 'Connection to the Diagnostic Engine could not be established. Ensure backend is running.',
-                    home_remedies: [],
-                    medical_treatments: [],
-                    doctors: []
-                });
+                console.error('[DEBUG] fetch() failed — activating mock fallback:', appendError);
+                // ── MOCK FALLBACK: Backend offline → use deterministic demo response ──
+                const mock = getMockResponse(finalSymptom);
+                const { doctors: registryDoctors } = mock.specialty
+                    ? getFilteredDoctors(mock.specialty, userLocation)
+                    : { doctors: [] };
+                setStructuredAnalysis({ ...mock, doctors: registryDoctors });
+                setMessages((prev: any[]) => [
+                    ...prev,
+                    { id: `mock-${Date.now()}`, role: 'assistant', content: JSON.stringify(mock) }
+                ]);
             }
 
             setLocalIsAnalyzing(false);
@@ -1016,66 +1131,201 @@ export default function ChatbotUI({
                             <div className="text-[8px] text-slate-500 mt-4 uppercase">Generated on: {new Date().toLocaleString()}</div>
                         </div>
 
-                        {/* AI Analysis Box */}
-                        <div className="glass-card bg-slate-900/60 border border-white/5 shadow-2xl rounded-3xl p-6 md:p-8 anim-item flex flex-col min-h-[400px] md:min-h-[500px]">
-                            <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
+                        {/* AI Clinical Evaluation Box — auto-expands to fit full report */}
+                        <div
+                            ref={analysisBoxRef}
+                            className="glass-card bg-slate-900/60 border border-white/5 shadow-2xl rounded-3xl p-6 md:p-8 anim-item flex flex-col"
+                        >
+                            {/* Card Header */}
+                            <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-6 flex-shrink-0">
                                 <h2 className="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tighter">
                                     <DynamicSpecialtyIcon className={cn("w-6 h-6", specialtyIconColor)} />
-                                    AI Analysis
+                                    Clinical Evaluation
                                 </h2>
-                                <button 
+                                <button
                                     onClick={() => setAutoListen(!autoListen)}
                                     className={cn(
                                         "px-4 py-1.5 rounded-xl border text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all no-print",
-                                        autoListen ? "bg-blue-500/10 border-blue-500/50 text-blue-400" : "bg-slate-950/80 border-white/5 text-slate-500"
+                                        autoListen ? "bg-amber-500/10 border-amber-500/50 text-amber-400" : "bg-slate-950/80 border-white/5 text-slate-500"
                                     )}
                                 >
-                                    <div className={cn("w-1.5 h-1.5 rounded-full", autoListen ? "bg-blue-400 animate-pulse" : "bg-slate-600")} />
+                                    <div className={cn("w-1.5 h-1.5 rounded-full", autoListen ? "bg-amber-400 animate-pulse" : "bg-slate-600")} />
                                     Auto-Listen {autoListen ? 'ON' : 'OFF'}
                                 </button>
                             </div>
 
-                            <div className="flex-1 flex flex-col">
+                            {/* Scrollable content region — grows freely, scrolls when viewport is small */}
+                            <div
+                                className="flex flex-col overflow-y-auto"
+                                style={{
+                                    minHeight: hasAnalysis ? '320px' : '320px',
+                                    maxHeight: hasAnalysis ? 'none' : '320px',
+                                }}
+                            >
                                 {!hasAnalysis && !analysisText && !(isAnalyzing || localIsAnalyzing) ? (
-                                    <div className="flex-1 flex flex-col items-center justify-center text-slate-600">
+                                    <div className="flex flex-col items-center justify-center text-slate-600 py-16 h-full">
                                         <BrainCircuit className="w-16 h-16 opacity-10 mb-6" />
                                         <p className="text-xs font-bold uppercase tracking-widest italic opacity-40">Ready for clinical analysis...</p>
                                     </div>
                                 ) : (
-                                    <div className="flex-1 flex flex-col">
+                                    <div className="flex flex-col gap-0">
+                                        {/* Processing Indicator */}
                                         {(isAnalyzing || localIsAnalyzing) && (
-                                            <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 animate-pulse no-print">
-                                                <Activity className="w-4 h-4 text-blue-400 animate-spin" />
-                                                <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Neural Engine Processing...</p>
+                                            <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 animate-pulse no-print">
+                                                <Activity className="w-4 h-4 text-amber-400 animate-spin" />
+                                                <p className="text-[10px] font-black text-amber-400 uppercase tracking-widest">Diagnostic Engine Processing...</p>
                                             </div>
                                         )}
-                                        <div className="flex-1 bg-slate-950/50 border-l-[4px] border-emerald-500/50 rounded-r-2xl p-8 text-slate-300 text-[13px] font-bold leading-relaxed mb-6">
-                                            <div className="space-y-6 markdown-content">
-                                                {analysisText ? analysisText.split('\n').map((line: string, i: number) => {
-                                                    const trimmedLine = line?.trim() || '';
-                                                    if (trimmedLine.startsWith('### ')) return <h3 key={i} className="text-lg font-black text-white mt-4 border-b border-white/5 pb-2 uppercase tracking-tighter">{trimmedLine.substring(4)}</h3>;
-                                                    if (trimmedLine.startsWith('**')) {
-                                                        const boldMatch = trimmedLine.match(/^\*\*(.*?)\*\*(.*)/);
-                                                        if (boldMatch) return <p key={i}><span className="text-white font-black text-[12px] tracking-tight mr-1">{boldMatch[1]}</span>{boldMatch[2]}</p>;
-                                                    }
-                                                    if (trimmedLine.startsWith('- ')) return <li key={i} className="ml-4 list-disc marker:text-emerald-500">{trimmedLine.substring(2)}</li>;
-                                                    return <p key={i}>{trimmedLine}</p>;
-                                                }) : (
-                                                    <div className="flex flex-col gap-4">
-                                                        <div className="h-4 w-3/4 bg-slate-800 rounded animate-pulse" />
-                                                        <div className="h-4 w-full bg-slate-800 rounded animate-pulse" />
-                                                        <div className="h-4 w-5/6 bg-slate-800 rounded animate-pulse" />
+
+                                        {/* ── Primary Diagnosis Summary ───────────────────────────────────── */}
+                                        {analysisText && (
+                                            <div className="mb-6 p-5 rounded-2xl bg-slate-950/60 border border-white/5 border-l-[4px] border-l-amber-500/70">
+                                                <p className="text-[10px] font-black text-amber-400 uppercase tracking-[0.18em] mb-2 flex items-center gap-2">
+                                                    <Stethoscope className="w-3.5 h-3.5" />
+                                                    Primary Clinical Impression
+                                                </p>
+                                                <p className="text-slate-200 text-[13px] font-semibold" style={{ lineHeight: '1.6' }}>
+                                                    {analysisText}
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {/* ── Structured Clinical Evaluation Sections ─────────────────── */}
+                                        {structuredAnalysis.clinical_evaluation && (
+                                            <div className="space-y-4">
+
+                                                {/* 1. Symptom Pathophysiology */}
+                                                {structuredAnalysis.clinical_evaluation.symptom_pathophysiology && (
+                                                    <div className="rounded-2xl overflow-hidden border border-white/5 bg-slate-950/40">
+                                                        <div className="flex items-center gap-2.5 px-5 py-3 bg-blue-900/20 border-b border-blue-500/20">
+                                                            <Brain className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                                                            <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em]">Symptom Pathophysiology</span>
+                                                        </div>
+                                                        <div className="p-5">
+                                                            <p className="text-slate-300 text-[12.5px] font-medium" style={{ lineHeight: '1.6' }}>
+                                                                {structuredAnalysis.clinical_evaluation.symptom_pathophysiology}
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 )}
+
+                                                {/* 2. Differential Considerations */}
+                                                {structuredAnalysis.clinical_evaluation.differential_considerations && (
+                                                    <div className="rounded-2xl overflow-hidden border border-white/5 bg-slate-950/40">
+                                                        <div className="flex items-center gap-2.5 px-5 py-3 bg-purple-900/20 border-b border-purple-500/20">
+                                                            <FlaskConical className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                                                            <span className="text-[10px] font-black text-purple-400 uppercase tracking-[0.2em]">Differential Considerations</span>
+                                                        </div>
+                                                        <div className="p-5">
+                                                            {structuredAnalysis.clinical_evaluation.differential_considerations
+                                                                .split('\n')
+                                                                .filter((line: string) => line.trim())
+                                                                .map((line: string, idx: number) => {
+                                                                    const isDisclaimer = line.toUpperCase().includes('DISCLAIMER');
+                                                                    return (
+                                                                        <p
+                                                                            key={idx}
+                                                                            className={cn(
+                                                                                'text-[12.5px] font-medium mb-1.5 last:mb-0',
+                                                                                isDisclaimer
+                                                                                    ? 'text-amber-400/90 italic text-[11px] mt-3 pt-3 border-t border-white/5'
+                                                                                    : 'text-slate-300'
+                                                                            )}
+                                                                            style={{ lineHeight: '1.6' }}
+                                                                        >
+                                                                            {line.trim()}
+                                                                        </p>
+                                                                    );
+                                                                })
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* 3. Urgency Triaging */}
+                                                {structuredAnalysis.clinical_evaluation.urgency_triaging && (() => {
+                                                    const urgencyText: string = structuredAnalysis.clinical_evaluation.urgency_triaging;
+                                                    const isEmergency = urgencyText.toUpperCase().startsWith('EMERGENCY');
+                                                    const isUrgent = urgencyText.toUpperCase().startsWith('URGENT');
+                                                    const urgencyColor = isEmergency
+                                                        ? { bg: 'bg-red-900/20', border: 'border-red-500/20', label: 'border-b-red-500/20 bg-red-900/30', icon: 'text-red-400', text: 'text-red-400', badge: 'bg-red-500/20 text-red-300 border border-red-500/30' }
+                                                        : isUrgent
+                                                        ? { bg: 'bg-orange-900/20', border: 'border-orange-500/20', label: 'border-b-orange-500/20 bg-orange-900/30', icon: 'text-orange-400', text: 'text-orange-400', badge: 'bg-orange-500/20 text-orange-300 border border-orange-500/30' }
+                                                        : { bg: 'bg-emerald-900/20', border: 'border-emerald-500/20', label: 'border-b-emerald-500/20 bg-emerald-900/30', icon: 'text-emerald-400', text: 'text-emerald-400', badge: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' };
+                                                    const triageLabel = isEmergency ? 'EMERGENCY' : isUrgent ? 'URGENT' : 'ROUTINE';
+                                                    const triageBody = urgencyText.replace(/^(EMERGENCY|URGENT|ROUTINE)\s*[—–-]?\s*/i, '').trim();
+                                                    return (
+                                                        <div className={cn('rounded-2xl overflow-hidden border bg-slate-950/40', urgencyColor.border)}>
+                                                            <div className={cn('flex items-center justify-between px-5 py-3 border-b', urgencyColor.label)}>
+                                                                <div className="flex items-center gap-2.5">
+                                                                    <AlertTriangle className={cn('w-4 h-4 flex-shrink-0', urgencyColor.icon)} />
+                                                                    <span className={cn('text-[10px] font-black uppercase tracking-[0.2em]', urgencyColor.text)}>Urgency Triage</span>
+                                                                </div>
+                                                                <span className={cn('px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest', urgencyColor.badge)}>
+                                                                    {triageLabel}
+                                                                </span>
+                                                            </div>
+                                                            <div className="p-5">
+                                                                <p className="text-slate-300 text-[12.5px] font-medium" style={{ lineHeight: '1.6' }}>
+                                                                    {triageBody}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
+
+                                                {/* 4. Pharmacist Notes */}
+                                                {structuredAnalysis.clinical_evaluation.pharmacist_notes && (
+                                                    <div className="rounded-2xl overflow-hidden border border-white/5 bg-slate-950/40">
+                                                        <div className="flex items-center gap-2.5 px-5 py-3 bg-amber-900/10 border-b border-amber-500/20">
+                                                            <Pill className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                                                            <span className="text-[10px] font-black text-amber-400 uppercase tracking-[0.2em]">Pharmacist Notes (US Context)</span>
+                                                        </div>
+                                                        <div className="p-5">
+                                                            <p className="text-slate-300 text-[12.5px] font-medium" style={{ lineHeight: '1.6' }}>
+                                                                {structuredAnalysis.clinical_evaluation.pharmacist_notes}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                             </div>
+                                        )}
+
+                                        {/* Loading skeleton when clinical_evaluation isn't ready yet */}
+                                        {!structuredAnalysis.clinical_evaluation && (isAnalyzing || localIsAnalyzing) && (
+                                            <div className="flex flex-col gap-4 mt-4">
+                                                {[...Array(4)].map((_, i) => (
+                                                    <div key={i} className="rounded-2xl p-5 bg-slate-950/40 border border-white/5">
+                                                        <div className="h-3 w-40 bg-slate-800 rounded animate-pulse mb-3" />
+                                                        <div className="space-y-2">
+                                                            <div className="h-3 w-full bg-slate-800/60 rounded animate-pulse" />
+                                                            <div className="h-3 w-5/6 bg-slate-800/60 rounded animate-pulse" />
+                                                            <div className="h-3 w-4/5 bg-slate-800/60 rounded animate-pulse" />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Disclaimer */}
+                                        <div className="mt-6 pt-4 border-t border-white/5">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-amber-500/70 italic flex items-center gap-2">
+                                                <AlertTriangle className="w-3.5 h-3.5" />
+                                                Not a substitute for professional medical advice. Consult a licensed physician.
+                                            </p>
                                         </div>
-                                        <button 
-                                            onClick={() => toggleSpeech(analysisText)} 
-                                            className="w-full py-4 rounded-2xl bg-slate-900 border border-white/5 hover:bg-slate-800 text-slate-300 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all cursor-pointer no-print shadow-xl group active:scale-95"
-                                        >
-                                            <Volume2 className={cn("w-5 h-5 transition-transform group-hover:scale-110", isSpeaking ? "text-emerald-400" : "text-blue-400")} />
-                                            {isSpeaking ? 'Stop Briefing' : 'Listen'}
-                                        </button>
+
+                                        {/* Listen Button */}
+                                        {analysisText && (
+                                            <button
+                                                onClick={() => toggleSpeech(analysisText)}
+                                                className="mt-4 w-full py-4 rounded-2xl bg-slate-900 border border-white/5 hover:bg-slate-800 text-slate-300 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all cursor-pointer no-print shadow-xl group active:scale-95"
+                                            >
+                                                <Volume2 className={cn("w-5 h-5 transition-transform group-hover:scale-110", isSpeaking ? "text-amber-400" : "text-blue-400")} />
+                                                {isSpeaking ? 'Stop Briefing' : 'Listen to Summary'}
+                                            </button>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -1095,9 +1345,19 @@ export default function ChatbotUI({
 
                                 <div className="space-y-4">
                                     {(treatmentTab === 'home' ? (structuredAnalysis.home_remedies || []) : (structuredAnalysis.medical_treatments || [])).map((item: any, idx: number) => (
-                                        <div key={idx} className="bg-slate-950/40 border border-white/5 rounded-2xl p-6 hover:bg-slate-900/60 transition-all border-l-4 border-l-blue-500/30">
-                                            <h4 className="text-[14px] font-black text-slate-100 uppercase tracking-tight mb-2">{item.title}</h4>
-                                            <p className="text-[11px] font-bold text-slate-500 leading-relaxed">{item.description}</p>
+                                        <div key={idx} className="bg-slate-950/40 border border-white/5 rounded-2xl p-5 hover:bg-slate-900/60 transition-all border-l-4 border-l-blue-500/30 group">
+                                            <h4 className="text-[14px] font-black text-slate-100 uppercase tracking-tight mb-1.5">{item.title}</h4>
+                                            <p className="text-[11px] font-bold text-slate-400 leading-relaxed mb-3">{item.description}</p>
+                                            {/* ── Clinical Logic (AIBOM / 2026 Transparency) ─────────────── */}
+                                            {item.clinical_logic && (
+                                                <div className="mt-3 pt-3 border-t border-white/5">
+                                                    <div className="flex items-center gap-1.5 mb-1">
+                                                        <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest">⚗ Clinical Logic</span>
+                                                        <span className="text-[8px] text-slate-600 uppercase">— AIBOM Explainability Log</span>
+                                                    </div>
+                                                    <p className="text-[10px] text-emerald-400/80 italic leading-relaxed">{item.clinical_logic}</p>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                     {((treatmentTab === 'home' ? structuredAnalysis.home_remedies : structuredAnalysis.medical_treatments) || []).length === 0 && (
@@ -1170,26 +1430,63 @@ export default function ChatbotUI({
                             <div className="flex justify-end pt-4 no-print">
                                 <button 
                                     onClick={exportToPDF}
-                                    className="w-full py-4 rounded-2xl bg-slate-900 border border-white/10 hover:bg-slate-800 text-slate-300 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all cursor-pointer shadow-xl active:scale-95"
+                                    disabled={isExporting}
+                                    className="w-full py-4 rounded-2xl bg-slate-900 border border-white/10 hover:bg-slate-800 text-slate-300 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all cursor-pointer shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <DownloadCloud className="w-5 h-5 text-blue-400" />
-                                    Export Diagnostic Report (PDF)
+                                    {isExporting ? <Activity className="w-5 h-5 text-blue-400 animate-spin" /> : <DownloadCloud className="w-5 h-5 text-blue-400" />}
+                                    {isExporting ? 'Generating Report...' : 'Export Diagnostic Report (PDF)'}
                                 </button>
                             </div>
                         )}
 
-                        {/* PDF EXCLUSIVE REMEDIES (FLATTENED VIEW - HIDDEN IN UI) */}
+                        {/* PDF EXCLUSIVE REMEDIES + CLINICAL EVALUATION (FLATTENED VIEW - HIDDEN IN UI) */}
                         <div className="hidden print-remedies flex-col gap-10">
+
+                            {/* Clinical Evaluation Sections for PDF */}
+                            {structuredAnalysis.clinical_evaluation && (
+                                <div className="space-y-6">
+                                    <h3 className="text-2xl font-black text-amber-400 uppercase border-b border-amber-500/30 pb-2">Clinical Evaluation</h3>
+
+                                    {structuredAnalysis.clinical_evaluation.symptom_pathophysiology && (
+                                        <div className="p-6 bg-slate-900/40 border border-white/10 rounded-2xl">
+                                            <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest mb-3">Symptom Pathophysiology</h4>
+                                            <p className="text-xs text-slate-300" style={{ lineHeight: '1.6' }}>{structuredAnalysis.clinical_evaluation.symptom_pathophysiology}</p>
+                                        </div>
+                                    )}
+
+                                    {structuredAnalysis.clinical_evaluation.differential_considerations && (
+                                        <div className="p-6 bg-slate-900/40 border border-white/10 rounded-2xl">
+                                            <h4 className="text-sm font-black text-purple-400 uppercase tracking-widest mb-3">Differential Considerations</h4>
+                                            <p className="text-xs text-slate-300 whitespace-pre-line" style={{ lineHeight: '1.6' }}>{structuredAnalysis.clinical_evaluation.differential_considerations}</p>
+                                        </div>
+                                    )}
+
+                                    {structuredAnalysis.clinical_evaluation.urgency_triaging && (
+                                        <div className="p-6 bg-slate-900/40 border border-white/10 rounded-2xl">
+                                            <h4 className="text-sm font-black text-orange-400 uppercase tracking-widest mb-3">Urgency Triage</h4>
+                                            <p className="text-xs text-slate-300" style={{ lineHeight: '1.6' }}>{structuredAnalysis.clinical_evaluation.urgency_triaging}</p>
+                                        </div>
+                                    )}
+
+                                    {structuredAnalysis.clinical_evaluation.pharmacist_notes && (
+                                        <div className="p-6 bg-slate-900/40 border border-white/10 rounded-2xl">
+                                            <h4 className="text-sm font-black text-amber-400 uppercase tracking-widest mb-3">Pharmacist Notes (US Context)</h4>
+                                            <p className="text-xs text-slate-300" style={{ lineHeight: '1.6' }}>{structuredAnalysis.clinical_evaluation.pharmacist_notes}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
                             <div className="space-y-6">
                                 <h3 className="text-2xl font-black text-blue-400 uppercase border-b border-blue-500/30 pb-2">Home Remedies</h3>
                                 {structuredAnalysis.home_remedies?.map((item: any, idx: number) => (
                                     <div key={idx} className="p-6 bg-slate-900/40 border border-white/10 rounded-2xl">
                                         <h4 className="text-lg font-black text-white">{item.title}</h4>
-                                        <p className="text-xs text-slate-400 mt-2">{item.description}</p>
+                                        <p className="text-xs text-slate-400 mt-2" style={{ lineHeight: '1.6' }}>{item.description}</p>
                                         {item.clinical_logic && (
                                             <div className="mt-4 pt-4 border-t border-white/5">
                                                 <span className="text-[9px] font-black text-emerald-500 uppercase">Clinical Logic:</span>
-                                                <p className="text-[10px] text-emerald-400/80 italic mt-1">{item.clinical_logic}</p>
+                                                <p className="text-[10px] text-emerald-400/80 italic mt-1" style={{ lineHeight: '1.6' }}>{item.clinical_logic}</p>
                                             </div>
                                         )}
                                     </div>
@@ -1201,11 +1498,11 @@ export default function ChatbotUI({
                                 {structuredAnalysis.medical_treatments?.map((item: any, idx: number) => (
                                     <div key={idx} className="p-6 bg-slate-900/40 border border-white/10 rounded-2xl">
                                         <h4 className="text-lg font-black text-white">{item.title}</h4>
-                                        <p className="text-xs text-slate-400 mt-2">{item.description}</p>
+                                        <p className="text-xs text-slate-400 mt-2" style={{ lineHeight: '1.6' }}>{item.description}</p>
                                         {item.clinical_logic && (
                                             <div className="mt-4 pt-4 border-t border-white/5">
                                                 <span className="text-[9px] font-black text-emerald-500 uppercase">Clinical Logic:</span>
-                                                <p className="text-[10px] text-emerald-400/80 italic mt-1">{item.clinical_logic}</p>
+                                                <p className="text-[10px] text-emerald-400/80 italic mt-1" style={{ lineHeight: '1.6' }}>{item.clinical_logic}</p>
                                             </div>
                                         )}
                                     </div>

@@ -9,10 +9,6 @@ export async function POST(req: Request) {
     console.log(`--- [API/CHAT] Incoming Request ---`);
     console.log(`Conversation ID: ${conversationId}`);
     console.log(`Messages Count: ${messages?.length || 0}`);
-    if (messages && messages.length > 0) {
-      console.log(`Last Message Role: ${messages[messages.length - 1].role}`);
-      console.log(`Last Message Prefix: ${messages[messages.length - 1].content?.substring(0, 50)}...`);
-    }
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -22,27 +18,45 @@ export async function POST(req: Request) {
       return new Response('Unauthorized', { status: 401 });
     }
 
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8001';
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
     console.log(`Calling Backend: ${backendUrl}/chat`);
 
     const enhancedMessages = [...messages];
     if (enhancedMessages.length > 0 && enhancedMessages[enhancedMessages.length - 1].role === 'user') {
         const strictPrompt = `
-        
-### SYSTEM INSTRUCTION ###
-You are the AI MED-VOICE diagnostic engine. You MUST respond with a single, valid JSON object. 
-No conversational filler. No markdown formatting. No backticks.
 
-REQUIRED JSON STRUCTURE:
+### SYSTEM INSTRUCTION — MED-VOICE CLINICAL ENGINE v2.0 ###
+You are the AI MED-VOICE Senior Diagnostic Specialist. You MUST respond with a single, valid JSON object.
+No conversational filler. No markdown outside the JSON. No backticks. Output ONLY the JSON.
+
+REQUIRED JSON STRUCTURE (all fields are MANDATORY):
 {
-  "analysis": "Clinical breakdown: 1. Synthesis of symptoms 2. Triage conditions 3. Recommended actions 4. Urgency (Low/Medium/High).",
-  "chat_response": "A direct 1-sentence response to the patient."
+  "specialty": "The single most relevant medical specialty (e.g., 'Neurologist', 'Cardiologist', 'General Physician').",
+  "diagnosis": "A concise 1-2 sentence primary clinical impression.",
+  "clinical_evaluation": {
+    "symptom_pathophysiology": "Write 3-5 sentences explaining the underlying biological and physiological mechanisms that explain WHY these specific symptoms are occurring. Reference relevant organ systems, receptors, or biochemical pathways (e.g., histamine cascade, vagal tone, neuroinflammation). Be precise and educational.",
+    "differential_considerations": "List 3-5 plausible medical conditions that match the symptom profile. For each, write one sentence explaining the clinical rationale. FORMAT: '1. [Condition Name]: [Rationale]. 2. [Condition Name]: [Rationale]...' END with a bold disclaimer: DISCLAIMER: This AI output is for educational purposes only and does NOT constitute a medical diagnosis. Always consult a licensed physician.",
+    "urgency_triaging": "Categorize as exactly one of: ROUTINE / URGENT / EMERGENCY. Then explain in 3-4 sentences the clinical reasoning for this categorization, including specific red-flag symptoms to watch for that would change the triage level.",
+    "pharmacist_notes": "Provide 3-5 sentences relevant to a US pharmacy context. Include: potential drug classes that are commonly prescribed for this condition (e.g., NSAIDs, SSRIs, ACE inhibitors), common OTC options available without prescription, any critical drug-drug interaction warnings, and relevant FDA black-box warnings if applicable. Do NOT recommend specific dosages."
+  },
+  "home_remedies": [
+    { "title": "Remedy Name", "description": "Step-by-step instruction.", "clinical_logic": "Evidence-based reasoning from peer-reviewed sources." }
+  ],
+  "medical_treatments": [
+    { "title": "Treatment / Drug Class", "description": "How it is typically used.", "clinical_logic": "Mechanism of action and evidence grade." }
+  ],
+  "doctors": [],
+  "chat_response": "A direct, compassionate 1-2 sentence response to the patient summarizing your assessment."
 }
 
-CRITICAL: If input is unclear or gibberish, ask for clarification in "chat_response" and set "analysis" to "Insufficient data for clinical analysis."
+CRITICAL RULES:
+- The "clinical_evaluation" object MUST always be present and fully populated. Never omit any sub-key.
+- If input is unclear, still populate all fields with your best inference and note uncertainty.
+- "urgency_triaging" must start with exactly one of the three labels: ROUTINE, URGENT, or EMERGENCY in capital letters.
+- Keep "differential_considerations" strictly fact-based with the disclaimer at the end.
 ### END INSTRUCTION ###`;
-        
-        enhancedMessages[enhancedMessages.length - 1].content = 
+
+        enhancedMessages[enhancedMessages.length - 1].content =
             enhancedMessages[enhancedMessages.length - 1].content + strictPrompt;
     }
 
