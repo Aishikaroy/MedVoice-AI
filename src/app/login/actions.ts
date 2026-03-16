@@ -11,6 +11,7 @@ export async function signup(formData: FormData) {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
     confirmPassword: formData.get('confirmPassword') as string,
+    phone: formData.get('phone') as string,
   }
 
   if (data.password !== data.confirmPassword) {
@@ -20,20 +21,20 @@ export async function signup(formData: FormData) {
   const { data: signUpData, error } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
+    options: {
+      data: {
+        phone: data.phone,
+      }
+    }
   })
 
   if (error) {
     return redirect(`/login?error=${encodeURIComponent(error.message)}`)
   }
 
-  // If email confirmation is disabled in Supabase, session will be returned immediately
-  if (signUpData.session) {
-    revalidatePath('/', 'layout')
-    return redirect('/chatbot')
-  }
-
-  // Fallback if session is still missing (likely Supabase settings not updated yet)
-  return redirect('/login?message=Account created! Please check your email if confirmation is still enabled in your Supabase dashboard.')
+  // Ensure the user is signed in immediately without needing to check their email
+  revalidatePath('/', 'layout')
+  return redirect('/chatbot')
 }
 
 export async function login(formData: FormData) {

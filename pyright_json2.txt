@@ -1,0 +1,78 @@
+﻿{
+    "version": "1.1.408",
+    "time": "1773492754908",
+    "generalDiagnostics": [
+        {
+            "file": "c:\\Users\\AISHIKA ROY\\OneDrive\\Documents\\Desktop\\MedVoiceAi-master (1)\\MedVoiceAi-master\\backend\\orchestrator.py",
+            "severity": "error",
+            "message": "No parameter named \"openai_api_key\"",
+            "range": {
+                "start": {
+                    "line": 67,
+                    "character": 8
+                },
+                "end": {
+                    "line": 67,
+                    "character": 22
+                }
+            },
+            "rule": "reportCallIssue"
+        },
+        {
+            "file": "c:\\Users\\AISHIKA ROY\\OneDrive\\Documents\\Desktop\\MedVoiceAi-master (1)\\MedVoiceAi-master\\backend\\orchestrator.py",
+            "severity": "error",
+            "message": "No parameter named \"openai_api_base\"",
+            "range": {
+                "start": {
+                    "line": 68,
+                    "character": 8
+                },
+                "end": {
+                    "line": 68,
+                    "character": 23
+                }
+            },
+            "rule": "reportCallIssue"
+        },
+        {
+            "file": "c:\\Users\\AISHIKA ROY\\OneDrive\\Documents\\Desktop\\MedVoiceAi-master (1)\\MedVoiceAi-master\\backend\\orchestrator.py",
+            "severity": "error",
+            "message": "No parameter named \"max_tokens\"",
+            "range": {
+                "start": {
+                    "line": 70,
+                    "character": 8
+                },
+                "end": {
+                    "line": 70,
+                    "character": 18
+                }
+            },
+            "rule": "reportCallIssue"
+        },
+        {
+            "file": "c:\\Users\\AISHIKA ROY\\OneDrive\\Documents\\Desktop\\MedVoiceAi-master (1)\\MedVoiceAi-master\\backend\\orchestrator.py",
+            "severity": "error",
+            "message": "No parameter named \"request_timeout\"",
+            "range": {
+                "start": {
+                    "line": 71,
+                    "character": 8
+                },
+                "end": {
+                    "line": 71,
+                    "character": 23
+                }
+            },
+            "rule": "reportCallIssue"
+        }
+    ],
+    "summary": {
+        "filesAnalyzed": 1,
+        "errorCount": 4,
+        "warningCount": 0,
+        "informationCount": 0,
+        "timeInSec": 2.958
+    }
+}
+

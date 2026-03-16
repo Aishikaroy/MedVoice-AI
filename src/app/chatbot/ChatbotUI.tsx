@@ -26,10 +26,10 @@ import { RefreshCw } from 'lucide-react';
 
 export default function ChatbotUI({
     selectedConversationId,
-    onConversationChange
+    onConversationChangeAction
 }: {
     selectedConversationId: string | null,
-    onConversationChange: (id: string | null) => void
+    onConversationChangeAction: (id: string | null) => void
 }) {
 
     const [userLocation, setUserLocation] = useState('Kolkata');
@@ -37,26 +37,39 @@ export default function ChatbotUI({
     const [isDetectingLocation, setIsDetectingLocation] = useState(false);
 
     const getFilteredDoctors = (specialty: string, city: string) => {
-        const spec = specialty.toLowerCase();
+        // Normalize rare/ultra-specific specialties to nearest registry match
+        const normalized = normalizeSpecialtyName(specialty);
+        const spec = normalized.toLowerCase();
+        const rawSpec = specialty.toLowerCase();
 
-        // 1. Strict Filter: Specialty AND City
+        // 1. Strict Filter: Normalized Specialty AND City
         let doctors = GLOBAL_DOCTOR_REGISTRY.filter(d =>
-            (d.specialty.toLowerCase().includes(spec) || spec.includes(d.specialty.toLowerCase())) &&
+            (d.specialty.toLowerCase().includes(spec) || spec.includes(d.specialty.toLowerCase()) ||
+             d.specialty.toLowerCase().includes(rawSpec) || rawSpec.includes(d.specialty.toLowerCase())) &&
             d.city === city
         );
 
         let isFallback = false;
 
-        // 2. Fallback: Online Experts
+        // 2. Fallback: Online Experts (same specialty match)
         if (doctors.length === 0) {
             doctors = GLOBAL_DOCTOR_REGISTRY.filter(d =>
-                (d.specialty.toLowerCase().includes(spec) || spec.includes(d.specialty.toLowerCase())) &&
+                (d.specialty.toLowerCase().includes(spec) || spec.includes(d.specialty.toLowerCase()) ||
+                 d.specialty.toLowerCase().includes(rawSpec) || rawSpec.includes(d.specialty.toLowerCase())) &&
                 (d.city === 'Online' || d.city === 'Online/Global')
             );
             isFallback = true;
         }
 
-        // 3. Ultimate Fallback: General Physician (Local or Online)
+        // 3. Any specialty match across all cities
+        if (doctors.length === 0) {
+            doctors = GLOBAL_DOCTOR_REGISTRY.filter(d =>
+                d.specialty.toLowerCase().includes(spec) || spec.includes(d.specialty.toLowerCase())
+            );
+            isFallback = true;
+        }
+
+        // 4. Ultimate Fallback: General Physician (Local or Online)
         if (doctors.length === 0) {
             doctors = GLOBAL_DOCTOR_REGISTRY.filter(d =>
                 d.specialty === 'General Physician' && (d.city === city || d.city === 'Online' || d.city === 'Online/Global')
@@ -192,7 +205,7 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
         onResponse: (response: any) => {
             const newConvId = response.headers.get('x-conversation-id');
             if (newConvId && !selectedConversationId) {
-                onConversationChange(newConvId);
+                onConversationChangeAction(newConvId);
             }
         },
         onFinish: (message: any) => {
@@ -397,10 +410,14 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
 
             const mapDoctor = (d: any) => ({
                 name: d.name || 'Specialist',
-                qualification: d.qualification || d.specialty || 'Medical Professional',
+                specialty: d.specialty || 'Specialist',
+                qualification: d.qualification || 'Medical Professional',
                 hospital: d.hospital || d.clinic || 'Medical Center',
-                timing: d.timing || d.availability || 'Available Today',
-                city: d.city || 'Local'
+                timing: d.timing || d.availability || 'Mon-Sat 10AM-5PM',
+                city: d.city || 'Local',
+                fees: d.fees || '₹1000',
+                is_web_verified: d.is_web_verified || false,
+                is_ai_suggested: d.is_ai_suggested || false,
             });
 
             // STRICT KEY BINDING: Use home_remedies as requested
@@ -486,12 +503,41 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
 
     // --- Handlers ---
 
-    const handleLocate = () => {
+    const handleLocate = async () => {
         setIsDetectingLocation(true);
-        setTimeout(() => {
+        try {
+            // Use IP-based geolocation (works without GPS permission)
+            const response = await fetch('https://ip-api.com/json/?fields=city,regionName,status', {
+                signal: AbortSignal.timeout(3000)
+            });
+            if (response.ok) {
+                const geoData = await response.json();
+                if (geoData.status === 'success' && geoData.city) {
+                    const detectedCity = geoData.city.toLowerCase();
+                    // Map to available locations
+                    const cityMap: Record<string, string> = {
+                        'kolkata': 'Kolkata', 'calcutta': 'Kolkata',
+                        'belgharia': 'Kolkata', 'kalyani': 'Kolkata',
+                        'delhi': 'Delhi NCR', 'new delhi': 'Delhi NCR', 'gurgaon': 'Delhi NCR', 'noida': 'Delhi NCR', 'faridabad': 'Delhi NCR',
+                        'mumbai': 'Mumbai', 'bombay': 'Mumbai', 'pune': 'Mumbai',
+                        'bangalore': 'Bangalore', 'bengaluru': 'Bangalore',
+                        'hyderabad': 'Hyderabad',
+                        'chennai': 'Chennai', 'madras': 'Chennai',
+                    };
+                    const matched = Object.entries(cityMap).find(([key]) => detectedCity.includes(key));
+                    if (matched) {
+                        setUserLocation(matched[1]);
+                    } else {
+                        // City not in our registry — alert user
+                        alert(`Detected city: ${geoData.city}. No local registry data for this city — showing AI-suggested specialists. You can also manually select a city from the dropdown.`);
+                    }
+                }
+            }
+        } catch {
+            // Silent fallback on geolocation failure
+        } finally {
             setIsDetectingLocation(false);
-            setUserLocation('Kolkata');
-        }, 800);
+        }
     };
 
     const handleNewConsultation = () => {
@@ -504,7 +550,7 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
         }]);
         setStructuredAnalysis(INITIAL_ANALYSIS);
         setUploadedFile(null);
-        onConversationChange(null);
+        onConversationChangeAction(null);
         setTreatmentTab('home'); // Reset tab to default
         if (typeof window !== 'undefined') {
             window.speechSynthesis.cancel();
@@ -804,7 +850,8 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
                 const payload = {
                     messages: [...chatHistory, { role: 'user', content: finalSymptom }],
                     conversation_id: selectedConversationId,
-                    user_id: user?.id || 'demo_user'
+                    user_id: user?.id || 'demo_user',
+                    user_city: userLocation === 'Online/Global' ? 'Online' : userLocation
                 };
                 
                 console.log('FRONTEND_SENDING:', payload);
@@ -825,12 +872,37 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
                 
                 const rawContent = responseData.data.messages[responseData.data.messages.length - 1].content;
                 const parsed = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent;
-                
+
+                // ── Doctor fallback: if backend returned no doctors, pull from local registry ──
+                let finalDoctors = (Array.isArray(parsed.doctors) && parsed.doctors.length > 0)
+                    ? parsed.doctors
+                    : (Array.isArray(parsed.doctor_list) && parsed.doctor_list.length > 0)
+                        ? parsed.doctor_list
+                        : [];
+
+                let isFallback = false;
+                if (finalDoctors.length === 0 && parsed.specialty) {
+                    const { doctors: regDocs, isFallback: fb } = getFilteredDoctors(parsed.specialty, userLocation);
+                    finalDoctors = regDocs;
+                    isFallback = fb;
+                }
+
+                // ── Rebuild clinical_evaluation from top-level keys if missing ──
+                const clinicalEval = parsed.clinical_evaluation || (parsed.pathophysiology ? {
+                    symptom_pathophysiology:     parsed.pathophysiology || '',
+                    differential_considerations: parsed.differential_considerations || '',
+                    urgency_triaging:            parsed.urgency_triage || '',
+                    pharmacist_notes:            parsed.pharmacist_notes || '',
+                } : null);
+
                 setStructuredAnalysis({
                     ...INITIAL_ANALYSIS,
                     ...parsed,
+                    clinical_evaluation: clinicalEval,
                     home_remedies: parsed.home_remedies || parsed.remedies || [],
-                    medical_treatments: parsed.medical_treatments || parsed.treatments || []
+                    medical_treatments: parsed.medical_treatments || parsed.treatments || [],
+                    doctors: finalDoctors,
+                    isLocationFallback: isFallback,
                 });
                 
                 // Map the new messages array back into the UI
@@ -888,19 +960,33 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
             setIsSpeaking(false);
         } else {
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
+
+            // ── SAFETY: Always prepend a spoken disclaimer ───────────────────
+            const SPOKEN_DISCLAIMER = 'Important safety notice. The following is AI-generated information for educational purposes only. It is not a medical diagnosis. Always consult a licensed physician before acting on this information. ';
+
+            // ── SAFETY: Detect EMERGENCY and append escalation prompt ────────
+            const urgencyRaw: string = structuredAnalysis?.urgency_triage || structuredAnalysis?.clinical_evaluation?.urgency_triaging || '';
+            const isEmergencyTriage = urgencyRaw.toUpperCase().includes('EMERGENCY');
+            const EMERGENCY_SUFFIX = isEmergencyTriage
+                ? ' Warning. This situation has been classified as an emergency. Please call emergency services immediately. India: one-one-two. U.S.: nine-one-one. Do not delay seeking immediate medical help.'
+                : '';
+
+            const safeText = SPOKEN_DISCLAIMER + text + EMERGENCY_SUFFIX;
+
+            const utterance = new SpeechSynthesisUtterance(safeText);
             const voices = window.speechSynthesis.getVoices();
             const preferredVoices = ['Google US English', 'Microsoft Aria', 'Samantha'];
             const voice = voices.find(v => preferredVoices.some(p => v.name.includes(p))) || voices[0];
             if (voice) utterance.voice = voice;
 
-            utterance.rate = 0.95;
+            utterance.rate = 0.93;
             utterance.pitch = 1.0;
 
             utterance.onstart = () => setIsSpeaking(true);
             utterance.onend = () => {
                 setIsSpeaking(false);
-                if (autoListen) {
+                if (autoListen && !isEmergencyTriage) {
+                    // Do NOT auto-listen after an EMERGENCY briefing
                     setTimeout(toggleVoiceInput, 500);
                 }
             };
@@ -917,7 +1003,7 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
             {/* Sidebar Integration */}
             <Sidebar 
                 currentId={selectedConversationId}
-                onSelect={onConversationChange}
+                onSelect={onConversationChangeAction}
                 onNew={handleNewConsultation}
                 isOpen={isSidebarOpen}
                 setIsOpen={setIsSidebarOpen}
@@ -1130,6 +1216,23 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
                             </div>
                             <div className="text-[8px] text-slate-500 mt-4 uppercase">Generated on: {new Date().toLocaleString()}</div>
                         </div>
+
+                        {/* ── EMERGENCY ALERT BANNER ─────────────────────────────── */}
+                        {(() => {
+                            const triage: string = structuredAnalysis?.urgency_triage || structuredAnalysis?.clinical_evaluation?.urgency_triaging || '';
+                            if (!triage.toUpperCase().includes('EMERGENCY')) return null;
+                            return (
+                                <div className="flex items-start gap-4 p-5 rounded-2xl bg-red-950/70 border border-red-500/50 shadow-2xl shadow-red-900/40 animate-pulse no-print" role="alert" aria-live="assertive">
+                                    <AlertTriangle className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" />
+                                    <div>
+                                        <p className="text-[12px] font-black text-red-300 uppercase tracking-widest mb-1">⚠️ Emergency Situation Detected</p>
+                                        <p className="text-[11px] font-bold text-red-400/90 leading-relaxed">
+                                            Call emergency services immediately — <span className="text-white font-black">India: 112</span> | <span className="text-white font-black">US: 911</span> | <span className="text-white font-black">UK: 999</span>. Do NOT rely solely on AI guidance for an emergency.
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        })()}
 
                         {/* AI Clinical Evaluation Box — auto-expands to fit full report */}
                         <div
@@ -1382,11 +1485,26 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
                                         <div key={idx} className="bg-slate-950/60 border border-white/5 rounded-3xl p-8 hover:bg-slate-900 transition-all group relative overflow-hidden ring-1 ring-white/5">
                                             <div className="flex justify-between items-start mb-6">
                                                 <div>
-                                                    <h4 className="text-2xl font-black text-white tracking-tighter mb-1">Dr. {doc.name}</h4>
-                                                    <div className="flex items-center gap-3">
+                                                    <h4 className="text-2xl font-black text-white tracking-tighter mb-1">
+                                                        {/* Prevent "Dr. Dr. Name" duplication - backend already includes Dr. prefix */}
+                                                        {doc.name?.startsWith('Dr.') ? doc.name : `Dr. ${doc.name}`}
+                                                    </h4>
+                                                    <div className="flex items-center gap-3 flex-wrap">
                                                         <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest bg-blue-500/10 px-2 py-0.5 rounded-md">
                                                             {doc.qualification}
                                                         </span>
+                                                        {doc.is_web_verified || doc.is_ai_suggested ? (
+                                                            <span
+                                                                className="text-[9px] font-black text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20 cursor-help"
+                                                                title="This doctor was suggested by AI and has NOT been independently verified. Confirm existence, availability, and credentials before visiting."
+                                                            >
+                                                                ⚠️ Unverified — Confirm Before Visiting
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                                                                ✓ Registry Verified
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
                                                 <div className="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[8px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-2">
@@ -1401,9 +1519,19 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
                                                     <span className="text-[11px] font-bold text-slate-300">{doc.hospital}</span>
                                                 </div>
                                                 <div className="flex items-center gap-3 text-slate-400">
+                                                    <MapPin className="w-4 h-4 text-slate-500" />
+                                                    <span className="text-[11px] font-bold text-slate-400">{doc.city || userLocation}</span>
+                                                </div>
+                                                <div className="flex items-center gap-3 text-slate-400">
                                                     <Clock className="w-4 h-4 text-slate-500" />
                                                     <span className="text-[11px] font-bold text-slate-500">{doc.timing || 'Mon-Sat 10AM-4PM'}</span>
                                                 </div>
+                                                {doc.fees && (
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Consultation Fee:</span>
+                                                        <span className="text-[12px] font-black text-emerald-400">{doc.fees}</span>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <button 
@@ -1432,7 +1560,7 @@ DISCLAIMER: This AI output is for educational purposes only and does NOT constit
                                     onClick={exportToPDF}
                                     disabled={isExporting}
                                     className="w-full py-4 rounded-2xl bg-slate-900 border border-white/10 hover:bg-slate-800 text-slate-300 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all cursor-pointer shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
+                                 >
                                     {isExporting ? <Activity className="w-5 h-5 text-blue-400 animate-spin" /> : <DownloadCloud className="w-5 h-5 text-blue-400" />}
                                     {isExporting ? 'Generating Report...' : 'Export Diagnostic Report (PDF)'}
                                 </button>

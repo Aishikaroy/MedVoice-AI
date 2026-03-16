@@ -42,6 +42,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+button, a, [role="button"], select, input[type="file"], input[type="checkbox"], input[type="radio"], .cursor-pointer {
+  cursor: pointer !important;
+}
+
 /* Kill any cached pseudo-element noise */
 body::before, body::after {
   display: none !important;
@@ -168,6 +172,7 @@ body::before, body::after {
   .btn-primary {
     position: relative;
     overflow: hidden;
+    cursor: pointer !important;
     border-radius: 9999px;
     font-weight: 600;
     letter-spacing: 0.025em;
@@ -188,6 +193,7 @@ body::before, body::after {
   .btn-secondary {
     position: relative;
     overflow: hidden;
+    cursor: pointer !important;
     border-radius: 9999px;
     font-weight: 500;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);

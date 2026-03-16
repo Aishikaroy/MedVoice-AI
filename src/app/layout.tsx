@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Link from "next/link";
 import { Activity } from "lucide-react";
+import FooterYear from "@/components/layout/FooterYear";
 
 export const metadata: Metadata = {
   title: "MedVoice AI - Your Medical Voice Assistant",
@@ -58,10 +59,10 @@ export default function RootLayout({
               <div>
                 <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Company</h4>
                 <ul className="space-y-2.5">
-                  <li><span className="text-sm text-slate-500">About Us</span></li>
-                  <li><span className="text-sm text-slate-500">Careers</span></li>
-                  <li><span className="text-sm text-slate-500">Blog</span></li>
-                  <li><span className="text-sm text-slate-500">Contact</span></li>
+                  <li><Link href="/" className="text-sm text-slate-500 hover:text-blue-400 transition-colors">About Us</Link></li>
+                  <li><Link href="/" className="text-sm text-slate-500 hover:text-blue-400 transition-colors">Careers</Link></li>
+                  <li><Link href="/" className="text-sm text-slate-500 hover:text-blue-400 transition-colors">Blog</Link></li>
+                  <li><Link href="/" className="text-sm text-slate-500 hover:text-blue-400 transition-colors">Contact</Link></li>
                 </ul>
               </div>
 
@@ -69,10 +70,10 @@ export default function RootLayout({
               <div>
                 <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Legal</h4>
                 <ul className="space-y-2.5">
-                  <li><span className="text-sm text-slate-500">Privacy Policy</span></li>
-                  <li><span className="text-sm text-slate-500">Terms of Service</span></li>
-                  <li><span className="text-sm text-slate-500">HIPAA Compliance</span></li>
-                  <li><span className="text-sm text-slate-500">Data Security</span></li>
+                  <li><Link href="/" className="text-sm text-slate-500 hover:text-blue-400 transition-colors">Privacy Policy</Link></li>
+                  <li><Link href="/" className="text-sm text-slate-500 hover:text-blue-400 transition-colors">Terms of Service</Link></li>
+                  <li><Link href="/" className="text-sm text-slate-500 hover:text-blue-400 transition-colors">HIPAA Compliance</Link></li>
+                  <li><Link href="/" className="text-sm text-slate-500 hover:text-blue-400 transition-colors">Data Security</Link></li>
                 </ul>
               </div>
             </div>
@@ -80,7 +81,7 @@ export default function RootLayout({
             {/* Bottom Bar */}
             <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-slate-600 text-xs">
-                &copy; {new Date().getFullYear()} MedVoice AI. All rights reserved. This is an AI assistant and does not replace professional medical advice.
+                &copy; <FooterYear /> MedVoice AI. All rights reserved. This is an AI assistant and does not replace professional medical advice.
               </p>
               <div className="flex items-center gap-6">
                 <span className="text-xs text-slate-600">Made with ❤️ for better healthcare</span>

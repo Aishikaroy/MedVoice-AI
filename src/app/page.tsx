@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, ReactNode } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Link from 'next/link';
@@ -19,7 +19,6 @@ export default function Home() {
   const featuresRef = useRef<HTMLDivElement>(null);
   const stepsRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
-  const testimonialsRef = useRef<HTMLDivElement>(null);
 
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [isClient, setIsClient] = useState(false);
@@ -49,7 +48,7 @@ export default function Home() {
         if (!heroRef.current) return;
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;
-        parallaxRefs.current.forEach((ref, index) => {
+        parallaxRefs.current.forEach((ref: HTMLDivElement | null, index: number) => {
           if (!ref) return;
           const speed = (index + 1) * 0.02;
           gsap.to(ref, {
@@ -94,19 +93,8 @@ export default function Home() {
         );
       }
 
-      // Testimonials
-      if (testimonialsRef.current) {
-        gsap.fromTo('.testimonial-card',
-          { y: 40, opacity: 0 },
-          {
-            y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: "power3.out",
-            scrollTrigger: { trigger: testimonialsRef.current, start: "top 75%" }
-          }
-        );
-      }
-
       return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, [heroRef, featuresRef, stepsRef, statsRef, testimonialsRef]);
+    }, [heroRef, featuresRef, stepsRef, statsRef]);
 
     return () => ctx.revert();
   }, []);
@@ -120,9 +108,9 @@ export default function Home() {
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center pt-20 pb-28 overflow-hidden">
 
         {/* Background Glows */}
-        <div ref={el => { parallaxRefs.current[0] = el }}
+        <div ref={(el: HTMLDivElement | null) => { parallaxRefs.current[0] = el }}
           className="absolute top-[5%] left-[10%] w-[50vw] h-[50vw] max-w-[700px] max-h-[700px] bg-blue-600/[0.07] rounded-full blur-[130px] pointer-events-none hero-glow-1" />
-        <div ref={el => { parallaxRefs.current[1] = el }}
+        <div ref={(el: HTMLDivElement | null) => { parallaxRefs.current[1] = el }}
           className="absolute bottom-[0%] right-[5%] w-[40vw] h-[40vw] max-w-[550px] max-h-[550px] bg-violet-600/[0.06] rounded-full blur-[110px] pointer-events-none hero-glow-2" />
 
         {/* Grid Overlay */}
@@ -194,7 +182,7 @@ export default function Home() {
           </div>
 
           {/* Floating UI Showcase Card */}
-          <div ref={el => { parallaxRefs.current[2] = el }}
+          <div ref={(el: HTMLDivElement | null) => { parallaxRefs.current[2] = el }}
             className="mt-20 relative max-w-3xl mx-auto hero-anim group">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 to-violet-500/15 blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none" />
 
@@ -408,58 +396,13 @@ export default function Home() {
                   <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.1em] md:tracking-[0.4em] group-hover/btn:text-white transition-colors">Technical Protocol</span>
                 </button>
 
-                <div className="pt-4">
-                  <a 
-                    href="http://localhost:3000" 
-                    className="inline-block text-[12px] font-black text-blue-400 uppercase tracking-[0.2em] border-b-2 border-blue-500/20 pb-1 hover:border-blue-400 hover:text-blue-300 transition-all"
-                  >
-                    Shareable App Link: http://localhost:3000
-                  </a>
-                </div>
+
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* 5. TESTIMONIALS                                                  */}
-      {/* ================================================================ */}
-      <section ref={testimonialsRef} className="py-24 relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16 max-w-3xl mx-auto">
-            <span className="text-emerald-400 font-semibold tracking-widest uppercase text-xs mb-3 block">Testimonials</span>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight">
-              Trusted by Thousands of
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-400"> Happy Patients</span>
-            </h2>
-            <p className="text-slate-400 text-lg font-light">
-              Real stories from real people who transformed their healthcare experience.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <TestimonialCard
-              quote="MedVoice AI identified my migraine triggers in minutes. My neurologist confirmed the analysis was spot-on. This is the future of healthcare."
-              name="Priya Sharma"
-              role="Software Engineer, Pune"
-              rating={5}
-            />
-            <TestimonialCard
-              quote="As a busy parent, I don't always have time to visit a doctor for every concern. MedVoice gives me peace of mind with accurate, instant guidance."
-              name="Rahul Mehta"
-              role="Product Manager, Mumbai"
-              rating={5}
-            />
-            <TestimonialCard
-              quote="The prescription analysis feature is incredible. It explained my medication interactions in simple terms that I could actually understand."
-              name="Dr. Ananya Roy"
-              role="General Physician, Kolkata"
-              rating={5}
-            />
-          </div>
-        </div>
-      </section>
 
 
       {/* ================================================================ */}
@@ -550,7 +493,7 @@ export default function Home() {
 /* COMPONENTS                                                        */
 /* ================================================================ */
 
-function StatItem({ icon, value, label }: { icon: React.ReactNode, value: string, label: string }) {
+function StatItem({ icon, value, label }: { icon: ReactNode, value: string, label: string }) {
   return (
     <div className="stat-item text-center p-4">
       <div className="flex items-center justify-center mb-3">{icon}</div>
@@ -561,7 +504,7 @@ function StatItem({ icon, value, label }: { icon: React.ReactNode, value: string
 }
 
 function FeatureCard({ icon, title, description, accent }: {
-  icon: React.ReactNode, title: string, description: string, accent: string
+  icon: ReactNode, title: string, description: string, accent: string
 }) {
   const accentColors: Record<string, string> = {
     blue: 'border-t-blue-500/50',
@@ -584,7 +527,7 @@ function FeatureCard({ icon, title, description, accent }: {
 }
 
 function StepCard({ number, title, description, icon }: {
-  number: string, title: string, description: string, icon: React.ReactNode
+  number: string, title: string, description: string, icon: ReactNode
 }) {
   return (
     <div className="step-card glass-card group bg-slate-900/30 relative overflow-hidden">
@@ -607,29 +550,7 @@ function StepCard({ number, title, description, icon }: {
   );
 }
 
-function TestimonialCard({ quote, name, role, rating }: {
-  quote: string, name: string, role: string, rating: number
-}) {
-  return (
-    <div className="testimonial-card glass-card group bg-slate-900/30 flex flex-col">
-      {/* Stars */}
-      <div className="flex gap-1 mb-4">
-        {[...Array(rating)].map((_, i) => (
-          <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
-        ))}
-      </div>
 
-      <p className="text-slate-300 text-sm leading-relaxed flex-grow mb-6 font-light italic">
-        &ldquo;{quote}&rdquo;
-      </p>
-
-      <div className="border-t border-white/[0.06] pt-4">
-        <p className="text-white font-semibold text-sm">{name}</p>
-        <p className="text-slate-500 text-xs mt-0.5">{role}</p>
-      </div>
-    </div>
-  );
-}
 
 function FaqItem({ index, open, setOpen, question, answer }: {
   index: number, open: number | null, setOpen: (i: number | null) => void,

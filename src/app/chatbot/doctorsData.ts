@@ -1,31 +1,44 @@
 import { 
-    Activity, Baby, Bone, Brain, BrainCircuit, Building, ChevronRight, Clock, 
-    CloudRain, Dna, Droplets, Ear, Eye, FlaskConical, Flower2, Heart, 
-    HeartHandshake, HeartPulse, Home, Layers, Leaf, MapPin, MessageSquare, 
-    Microscope, Moon, Palmtree, Pill, Scale, Scan, Scissors, ShieldAlert, 
-    ShieldCheck, Smile, Sparkles, Sprout, Stethoscope, Syringe, Target, 
-    Thermometer, User, UserPlus, Volume2, Waves, Wind, Zap, Accessibility,
-    Handshake, Languages, AlertTriangle, Briefcase
+    LucideIcon, Sparkles, Heart, Brain, Bone, Ear, Stethoscope, 
+    Activity, Droplets, Wind, ShieldAlert, Baby, Flower2, 
+    HeartHandshake, Thermometer, Eye, BrainCircuit, Smile, 
+    Zap, Scissors, Scan, Syringe, Microscope, Waves, 
+    UserCheck, Pill, ShieldCheck, Siren, Footprints, 
+    UserPlus, Trees, TestTube, Languages, Utensils, 
+    EarOff, Fingerprint, ScissorsLineDashed, 
+    Timer, Glasses, Sun, Moon, Database, 
+    Dna, CloudRain, Flame, Scale, BookOpen, 
+    Dumbbell, PersonStanding, Lightbulb, 
+    Coffee, Briefcase, ZapOff, Anchor, Camera
 } from 'lucide-react';
 
 export const GLOBAL_DOCTOR_REGISTRY = [
-    // Kolkata (Local Elite)
     { name: 'Dr. Jajati Sinha', specialty: 'Internal Medicine', hospital: 'Manipal (AMRI) Dhakuria / Remedy Garia', city: 'Kolkata', fees: '₹1200', qualification: 'MD, MRCP' },
-    { name: 'Dr. Ramna Banerjee', specialty: 'Gynecology & Robotic Surgeon', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1500', qualification: 'MD, FRCOG' },
+    { name: 'Dr. Ramna Banerjee', specialty: 'Gynecologist & Robotic Surgeon', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1500', qualification: 'MD, FRCOG' },
     { name: 'Dr. Kunal Sarkar', specialty: 'Cardiac Surgeon', hospital: 'Medica Superspecialty', city: 'Kolkata', fees: '₹2000', qualification: 'MCh, FIACS' },
     { name: 'Dr. Tarun Jindal', specialty: 'Uro-Oncologist', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1800', qualification: 'MS, MCh' },
     { name: 'Dr. Sujoy Majumdar', specialty: 'Endocrinologist', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1200', qualification: 'MD, DM' },
+    { name: 'Dr. Ravi Kant Saraogi', specialty: 'Endocrinologist', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1500', qualification: 'MBBS, MD, DM, FICP' },
+    { name: 'Dr. Arjun Baidya', specialty: 'Endocrinologist', hospital: 'Sparsh Diagnostic Centre', city: 'Kolkata', fees: '₹1200', qualification: 'MBBS, MD, DM' },
     { name: 'Dr. Biswanath Roy', specialty: 'ENT Specialist', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1000', qualification: 'MS (ENT)' },
     { name: 'Dr. Gautam Dhar Choudhury', specialty: 'Rheumatologist', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1400', qualification: 'MD, DM' },
     { name: 'Dr. Vivek Goel', specialty: 'Nephrologist', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1400', qualification: 'MD, DM' },
+    { name: 'Dr. Abhijit Taraphder', specialty: 'Nephrologist', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1600', qualification: 'MD, DM (Nephrology)' },
+    { name: 'Dr. Pratim Sengupta', specialty: 'Nephrologist', hospital: 'ILS Hospital / Belle Vue', city: 'Kolkata', fees: '₹1500', qualification: 'MD, DM Nephrology' },
     { name: 'Dr. Vikash Kapoor', specialty: 'Orthopedic Surgeon', hospital: 'Medica Superspeciality', city: 'Kolkata', fees: '₹1500', qualification: 'MS (Ortho)' },
     { name: 'Dr. Ronen Roy', specialty: 'Orthopedic Surgeon', hospital: 'Fortis Anandapur', city: 'Kolkata', fees: '₹1600', qualification: 'MS, FRCS' },
     { name: 'Dr. Deep Das', specialty: 'Neurologist', hospital: 'CMRI / Woodlands', city: 'Kolkata', fees: '₹1500', qualification: 'MD, DM' },
     { name: 'Dr. Raja Dhar', specialty: 'Pulmonologist', hospital: 'CMRI', city: 'Kolkata', fees: '₹1400', qualification: 'MD, MRCP' },
+    { name: 'Dr. Subhasish Ghosh', specialty: 'Pulmonologist', hospital: 'Apollo / Manipal Hospitals', city: 'Kolkata', fees: '₹1300', qualification: 'MD, FCCP' },
+    { name: 'Dr. Sushmita Roychowdhury', specialty: 'Pulmonologist', hospital: 'Fortis Anandapur', city: 'Kolkata', fees: '₹1500', qualification: 'MD, DNB (Pulmonary)' },
     { name: 'Dr. Arindam Biswas', specialty: 'Internal Medicine', hospital: 'Rabindranath Tagore (RN Tagore)', city: 'Kolkata', fees: '₹1100', qualification: 'MD' },
     { name: 'Dr. Koushik Lahiri', specialty: 'Dermatologist', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1200', qualification: 'MD, DDVL' },
-
-    // Mumbai (Financial & Western Hub)
+    { name: 'Dr. Mahesh Goenka', specialty: 'Gastroenterologist', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1500', qualification: 'MD, DM (Gastro)' },
+    { name: 'Dr. Chanchal Goswami', specialty: 'Oncologist', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹1800', qualification: 'MD, DMRT' },
+    { name: 'Dr. Jai Ranjan Ram', specialty: 'Psychiatrist', hospital: 'Apollo / Manipal Apollo', city: 'Kolkata', fees: '₹1600', qualification: 'MD, MRCPsych' },
+    { name: 'Dr. Apurba Ghosh', specialty: 'Pediatrician', hospital: 'Institute of Child Health', city: 'Kolkata', fees: '₹1200', qualification: 'MD (Pediatrics)' },
+    { name: 'Dr. Abhijit Chattopadhyay', specialty: 'Ophthalmologist', hospital: 'Priyamvada Birla Aravind Eye', city: 'Kolkata', fees: '₹1000', qualification: 'MS (Ophtha)' },
+    { name: 'Dr. Siddhartha Das', specialty: 'Dentist', hospital: 'Apollo Multispeciality', city: 'Kolkata', fees: '₹800', qualification: 'BDS, MDS' },
     { name: 'Dr. Ramakanta Panda', specialty: 'Cardiologist', hospital: 'Asian Heart Institute', city: 'Mumbai', fees: '₹3000', qualification: 'MCh' },
     { name: 'Dr. Nitin Sampat', specialty: 'Neurologist', hospital: 'Wockhardt Hospital', city: 'Mumbai', fees: '₹2500', qualification: 'MD, DNB' },
     { name: 'Dr. Dinshaw Pardiwala', specialty: 'Orthopedic Surgeon', hospital: 'Kokilaben Dhirubhai Ambani Hospital', city: 'Mumbai', fees: '₹3000', qualification: 'MS, DNB' },
@@ -35,30 +48,22 @@ export const GLOBAL_DOCTOR_REGISTRY = [
     { name: 'Dr. Vishal Peshattiwar', specialty: 'Orthopedic Surgeon', hospital: 'Kokilaben Dhirubhai Ambani Hospital', city: 'Mumbai', fees: '₹3200', qualification: 'MS (Spine Surgery)' },
     { name: 'Dr. Alok Sharma', specialty: 'Neurologist', hospital: 'NeuroGen Institute', city: 'Mumbai', fees: '₹3000', qualification: 'MS, MCh' },
     { name: 'Dr. Santanu Sen', specialty: 'Oncologist', hospital: 'Kokilaben Dhirubhai Ambani Hospital', city: 'Mumbai', fees: '₹2800', qualification: 'MD (Pediatric Oncology)' },
-
-    // Delhi NCR (Northern Hub)
     { name: 'Dr. Naresh Trehan', specialty: 'Cardiologist', hospital: 'Medanta - The Medicity', city: 'Delhi NCR', fees: '₹3500', qualification: 'MCh' },
     { name: 'Dr. Ashok Rajgopal', specialty: 'Orthopedic Surgeon', hospital: 'Medanta - The Medicity', city: 'Delhi NCR', fees: '₹3000', qualification: 'MS, MCh' },
     { name: 'Dr. Vinit Suri', specialty: 'Neurologist', hospital: 'Indraprastha Apollo', city: 'Delhi NCR', fees: '₹2800', qualification: 'MD, DM' },
     { name: 'Dr. Randhir Sud', specialty: 'Gastroenterologist', hospital: 'Medanta - The Medicity', city: 'Delhi NCR', fees: '₹3200', qualification: 'MD, DM' },
-    { name: 'Dr. Sabhyata Gupta', specialty: 'Gynecologist', hospital: 'Medanta - The Medicity', city: 'Delhi NCR', fees: '₹2800', qualification: 'MD, DNB' },
+    { name: 'Dr. Sabhyata Gupta', specialty: 'Gyneologist', hospital: 'Medanta - The Medicity', city: 'Delhi NCR', fees: '₹2800', qualification: 'MD, DNB' },
     { name: 'Dr. Pradeep Chowbey', specialty: 'Bariatric Surgeon', hospital: 'Max Super Speciality, Saket', city: 'Delhi NCR', fees: '₹3500', qualification: 'MS, FRCS' },
     { name: 'Dr. Rommel Tickoo', specialty: 'Internal Medicine', hospital: 'Max Hospital', city: 'Delhi NCR', fees: '₹1800', qualification: 'MD' },
-
-    // Bangalore (Southern Hub)
     { name: 'Dr. Devi Prasad Shetty', specialty: 'Cardiologist', hospital: 'Narayana Health', city: 'Bangalore', fees: '₹3000', qualification: 'MS, FRCS' },
     { name: 'Dr. Vivek Jawali', specialty: 'Cardiologist', hospital: 'Fortis Hospital', city: 'Bangalore', fees: '₹2800', qualification: 'MS, MCh' },
     { name: 'Dr. Deepak Haldipur', specialty: 'ENT Specialist', hospital: 'Sparsh Hospital', city: 'Bangalore', fees: '₹1500', qualification: 'MS (ENT)' },
     { name: 'Dr. Somashekhar S. P.', specialty: 'Oncologist', hospital: 'Aster DM Healthcare', city: 'Bangalore', fees: '₹3200', qualification: 'MS, MCh' },
     { name: 'Dr. Ravi Gopal Varma', specialty: 'Neurologist', hospital: 'Aster CMI', city: 'Bangalore', fees: '₹3000', qualification: 'MS, MCh' },
-
-    // Hyderabad & Chennai
     { name: 'Dr. D. Nageshwar Reddy', specialty: 'Gastroenterologist', hospital: 'AIG Hospitals', city: 'Hyderabad', fees: '₹3000', qualification: 'MD, DM' },
     { name: 'Dr. P. Raghu Ram', specialty: 'Oncologist', hospital: 'KIMS Hospitals', city: 'Hyderabad', fees: '₹3000', qualification: 'MS, FRCS' },
     { name: 'Dr. K. M. Cherian', specialty: 'Cardiac Surgeon', hospital: 'Frontier Lifeline', city: 'Chennai', fees: '₹2500', qualification: 'MS, FRCS' },
     { name: 'Dr. Mohamed Rela', specialty: 'Liver Transplant Surgeon', hospital: 'Rela Institute', city: 'Chennai', fees: '₹3000', qualification: 'MS, FRCS' },
-
-    { name: 'Dr. Arundhati Roy', specialty: 'General Physician', hospital: 'MedVoice Online Clinic', city: 'Online', fees: '₹500', qualification: 'MBBS, MD' },
     { name: 'Dr. Sanjoy Sen', specialty: 'Dermatologist', hospital: 'MedVoice Online Clinic', city: 'Online', fees: '₹700', qualification: 'MD (Skin)' },
     { name: 'Dr. Pritam Das', specialty: 'Psychiatrist', hospital: 'MedVoice Online Clinic', city: 'Online', fees: '₹800', qualification: 'MD, DPM' },
     { name: 'Dr. Meera Iyer', specialty: 'Pediatrician', hospital: 'MedVoice Virtual Care', city: 'Online', fees: '₹600', qualification: 'MD (Pediatrics)' },
@@ -67,83 +72,100 @@ export const GLOBAL_DOCTOR_REGISTRY = [
     { name: 'Dr. Ananya Reddy', specialty: 'Rheumatologist', hospital: 'MedVoice Online Clinic', city: 'Online', fees: '₹950', qualification: 'MD, DM' },
     { name: 'Dr. Vikram Seth', specialty: 'Pulmonologist', hospital: 'MedVoice Virtual Care', city: 'Online', fees: '₹850', qualification: 'MD, DTCD' },
     { name: 'Dr. Sneha Kapoor', specialty: 'Ophthalmologist', hospital: 'MedVoice Online Clinic', city: 'Online', fees: '₹750', qualification: 'MS (Ophtha)' },
+    { name: 'Dr. Amitava Das', specialty: 'General Physician', hospital: 'Belgharia Municipal Hospital', city: 'Belgharia', fees: '₹600', qualification: 'MBBS' },
+    { name: 'Dr. Somnath Paul', specialty: 'Cardiologist', hospital: 'Kalyani JNM Hospital', city: 'Kalyani', fees: '₹1200', qualification: 'MD, DM' },
+    { name: "Dr. Mousumi Ghosh", specialty: "Dermatologist", hospital: "Belgharia State General", city: "Belgharia", fees: "₹500", qualification: "MD (Skin)", timing: "Mon-Fri 4PM-7PM" },
+    { name: "Dr. Pradip Kundu", specialty: "Neurologist", hospital: "Kalyani JNM Hospital", city: "Kalyani", fees: "₹1500", qualification: "MD, DM", timing: "Tue/Thu 11AM-3PM" },
+    { name: "Dr. Buddhadeb Chatterjee", specialty: "Orthopedic Surgeon", hospital: "Woodlands / Apollo", city: "Kolkata", fees: "₹1500", qualification: "MS (Ortho), 30+ yrs Exp", timing: "Mon-Sat 10AM-1PM" },
+    { name: "Dr. Mukund Agrawal", specialty: "Orthopedic Surgeon", hospital: "MedVoice Virtual Specialist", city: "Online", fees: "₹1200", qualification: "MS, Fellowship in Joint Replacement", timing: "Daily 8AM-10PM (Online)" },
+    { name: "Dr. Gautam Gupta", specialty: "Orthopedic Surgeon", hospital: "Desun Hospital", city: "Kolkata", fees: "₹1400", qualification: "MS (Ortho)", timing: "Mon/Wed/Fri 2PM-6PM" },
+    { name: "Dr. Sanjay Jain", specialty: "Orthopedic Surgeon", hospital: "Apollo multispeciality", city: "Kolkata", fees: "₹1600", qualification: "MS, MCh", timing: "Mon-Sat 12PM-5PM" }
 ];
 
-export const normalizeSpecialtyName = (name: string) => {
-    if (!name) return 'Medical Specialist';
-    return name
-        .replace(/_/g, ' ')
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ')
-        .replace('Care Specialist', 'Palliative Care Specialist')
-        .replace('Medicine Doctor', 'Sports Medicine Doctor');
-};
+export function normalizeSpecialtyName(name: string): string {
+    const s = name.toLowerCase();
+    if (s.includes('ortho')) return 'Orthopedic Surgeon';
+    if (s.includes('cardio')) return 'Cardiologist';
+    if (s.includes('derm') || s.includes('skin')) return 'Dermatologist';
+    if (s.includes('neuro')) return 'Neurologist';
+    if (s.includes('gastro')) return 'Gastroenterologist';
+    if (s.includes('pulmon') || s.includes('lung') || s.includes('chest')) return 'Pulmonologist';
+    if (s.includes('nephro') || s.includes('kidney')) return 'Nephrologist';
+    if (s.includes('endo') || s.includes('diabet')) return 'Endocrinologist';
+    if (s.includes('physician') || s.includes('medicine') || s.includes('gp')) return 'General Physician';
+    if (s.includes('gynea') || s.includes('gyneo') || s.includes('gynec') || s.includes('obg')) return 'Gynecologist';
+    if (s.includes('ent') || s.includes('ear') || s.includes('nose') || s.includes('throat')) return 'ENT Specialist';
+    if (s.includes('psychi') || s.includes('mental')) return 'Psychiatrist';
+    if (s.includes('pediat') || s.includes('child')) return 'Pediatrician';
+    if (s.includes('ophtha') || s.includes('eye')) return 'Ophthalmologist';
+    if (s.includes('onco') || s.includes('cancer')) return 'Oncologist';
+    if (s.includes('urol') || s.includes('bladder')) return 'Urologist';
+    if (s.includes('rheuma') || s.includes('joint')) return 'Rheumatologist';
+    if (s.includes('hemat') || s.includes('blood')) return 'Hematologist';
+    if (s.includes('immuno') || s.includes('allergy')) return 'Allergist & Immunologist';
+    if (s.includes('hepat') || s.includes('liver')) return 'Hepatologist';
+    if (s.includes('vascul')) return 'Vascular Surgeon';
+    if (s.includes('plastic') || s.includes('cosmetic')) return 'Plastic Surgeon';
+    if (s.includes('podia') || s.includes('foot')) return 'Podiatrist';
+    if (s.includes('geriat') || s.includes('elder')) return 'Geriatrician';
+    if (s.includes('infect') || s.includes('virus')) return 'Infectious Disease Specialist';
+    if (s.includes('anesthes')) return 'Anesthesiologist';
+    if (s.includes('radio') || s.includes('xray') || s.includes('scan')) return 'Radiologist';
+    if (s.includes('patho') || s.includes('lab')) return 'Pathologist';
+    if (s.includes('emerg') || s.includes('er ')) return 'Emergency Medicine Specialist';
+    if (s.includes('sport')) return 'Sports Medicine Specialist';
+    if (s.includes('pain')) return 'Pain Management Specialist';
+    if (s.includes('neo') && s.includes('nat')) return 'Neonatologist';
+    if (s.includes('dent') || s.includes('teeth') || s.includes('oral')) return 'Dentist';
+    if (s.includes('sleep') || s.includes('apnea')) return 'Sleep Medicine Specialist';
+    if (s.includes('genet')) return 'Geneticist';
+    if (s.includes('nutrition') || s.includes('diet')) return 'Nutritionist';
+    if (s.includes('palliat') || s.includes('hospice')) return 'Palliative Care Specialist';
+    if (s.includes('addict')) return 'Addiction Specialist';
+    if (s.includes('sex') || s.includes('reproductive')) return 'Sexologist';
+    if (s.includes('tricho') || s.includes('hair')) return 'Trichologist';
+    if (s.includes('cosmeto')) return 'Cosmetologist';
+    if (s.includes('psychol')) return 'Psychologist';
+    if (s.includes('rehab')) return 'Rehabilitation Specialist';
+    if (s.includes('toxic')) return 'Toxicologist';
+    if (s.includes('forensic')) return 'Forensic Pathologist';
+    if (s.includes('audio') || s.includes('hearing')) return 'Audiologist';
+    if (s.includes('speech')) return 'Speech Therapist';
+    if (s.includes('bariatric')) return 'Bariatric Surgeon';
+    if (s.includes('ivf') || s.includes('fertility')) return 'Fertility Specialist';
+    return name;
+}
 
-export const getSpecialtyIcon = (specialty: string) => {
+export function getSpecialtyIcon(specialty: string): LucideIcon {
     const s = specialty.toLowerCase();
-    
-    // 60-Specialty Massive Mapping
-    if (s.includes('dermatologist') || s.includes('skin')) return { icon: Sparkles, color: 'text-blue-400' };
-    if (s.includes('cardiologist') || s.includes('heart')) return { icon: Heart, color: 'text-red-400' };
-    if (s.includes('neurologist') || s.includes('brain')) return { icon: Brain, color: 'text-purple-400' };
-    if (s.includes('orthopedic') || s.includes('bone') || s.includes('joint')) return { icon: Bone, color: 'text-orange-400' };
-    if (s.includes('ent specialist') || s.includes('ear') || s.includes('nose') || s.includes('throat')) return { icon: Ear, color: 'text-cyan-400' };
-    if (s.includes('gastroenterologist') || s.includes('stomach') || s.includes('liver')) return { icon: Stethoscope, color: 'text-emerald-400' };
-    if (s.includes('pulmonologist') || s.includes('lung')) return { icon: Activity, color: 'text-sky-400' };
-    if (s.includes('nephrologist') || s.includes('kidney')) return { icon: Droplets, color: 'text-indigo-400' };
-    if (s.includes('urologist') || s.includes('urine')) return { icon: Wind, color: 'text-blue-500' };
-    if (s.includes('oncologist') || s.includes('cancer')) return { icon: ShieldAlert, color: 'text-rose-400' };
-    if (s.includes('pediatrician') || s.includes('child')) return { icon: Baby, color: 'text-pink-400' };
-    if (s.includes('gynecologist') || s.includes('female')) return { icon: Flower2, color: 'text-rose-300' };
-    if (s.includes('obstetrician') || s.includes('pregnancy')) return { icon: HeartHandshake, color: 'text-pink-300' };
-    if (s.includes('endocrinologist') || s.includes('hormone')) return { icon: Thermometer, color: 'text-yellow-400' };
-    if (s.includes('ophthalmologist') || s.includes('eye')) return { icon: Eye, color: 'text-blue-300' };
-    if (s.includes('psychiatrist') || s.includes('mental')) return { icon: BrainCircuit, color: 'text-teal-400' };
-    if (s.includes('psychologist') || s.includes('behavior')) return { icon: Smile, color: 'text-teal-300' };
-    if (s.includes('dentist') || s.includes('teeth')) return { icon: Zap, color: 'text-slate-100' };
-    if (s.includes('surgeon') && !s.includes('ortho')) return { icon: Scissors, color: 'text-slate-400' };
-    if (s.includes('physician') || s.includes('general')) return { icon: Stethoscope, color: 'text-blue-400' };
-    if (s.includes('radiologist') || s.includes('x-ray')) return { icon: Scan, color: 'text-slate-500' };
-    if (s.includes('anesthesiologist')) return { icon: Syringe, color: 'text-indigo-300' };
-    if (s.includes('pathologist') || s.includes('biopsy')) return { icon: Microscope, color: 'text-rose-500' };
-    if (s.includes('hematologist') || s.includes('blood')) return { icon: Droplets, color: 'text-red-600' };
-    if (s.includes('rheumatologist') || s.includes('arthritis')) return { icon: Activity, color: 'text-orange-500' };
-    if (s.includes('sexologist')) return { icon: Heart, color: 'text-pink-500' };
-    if (s.includes('allergist') || s.includes('immune')) return { icon: Wind, color: 'text-green-300' };
-    if (s.includes('veterinarian')) return { icon: Smile, color: 'text-amber-600' };
-    if (s.includes('homeopathic')) return { icon: Leaf, color: 'text-green-400' };
-    if (s.includes('ayurvedic')) return { icon: Sprout, color: 'text-green-600' };
-    if (s.includes('emergency')) return { icon: AlertTriangle, color: 'text-red-500' };
-    if (s.includes('family medicine')) return { icon: Home, color: 'text-blue-300' };
-    if (s.includes('infectious')) return { icon: ShieldCheck, color: 'text-green-500' };
-    if (s.includes('geriatrician') || s.includes('elderly')) return { icon: UserPlus, color: 'text-slate-300' };
-    if (s.includes('neonatologist')) return { icon: Baby, color: 'text-pink-200' };
-    if (s.includes('sports medicine')) return { icon: Zap, color: 'text-yellow-500' };
-    if (s.includes('pain management')) return { icon: CloudRain, color: 'text-slate-400' };
-    if (s.includes('pharmacologist')) return { icon: Pill, color: 'text-blue-400' };
-    if (s.includes('geneticist')) return { icon: Dna, color: 'text-purple-500' };
-    if (s.includes('sleep medicine')) return { icon: Moon, color: 'text-indigo-400' };
-    if (s.includes('cardiothoracic') || s.includes('cardiac surgeon')) return { icon: HeartPulse, color: 'text-red-500' };
-    if (s.includes('vascular')) return { icon: Waves, color: 'text-red-400' };
-    if (s.includes('plastic')) return { icon: Sparkles, color: 'text-pink-400' };
-    if (s.includes('maxillofacial')) return { icon: User, color: 'text-slate-400' };
-    if (s.includes('palliative') || s.includes('comfort')) return { icon: HeartHandshake, color: 'text-emerald-300' };
-    if (s.includes('occupational medicine')) return { icon: Briefcase, color: 'text-orange-300' };
-    if (s.includes('reproductive')) return { icon: Dna, color: 'text-rose-200' };
-    if (s.includes('interventional')) return { icon: Target, color: 'text-blue-500' };
-    if (s.includes('transplant')) return { icon: HeartPulse, color: 'text-rose-600' };
-    if (s.includes('bariatric') || s.includes('weight')) return { icon: Scale, color: 'text-indigo-300' };
-    if (s.includes('audiologist') || s.includes('hearing')) return { icon: Volume2, color: 'text-blue-400' };
-    if (s.includes('speech')) return { icon: MessageSquare, color: 'text-blue-300' };
-    if (s.includes('critical care') || s.includes('intensivist')) return { icon: Activity, color: 'text-red-700' };
-    if (s.includes('occupational therapist')) return { icon: Handshake, color: 'text-orange-400' };
-    if (s.includes('physiatrist') || s.includes('rehabilitation')) return { icon: Accessibility, color: 'text-emerald-400' };
-    if (s.includes('tropical')) return { icon: Palmtree, color: 'text-amber-500' };
-    if (s.includes('biochemist')) return { icon: FlaskConical, color: 'text-cyan-500' };
-    if (s.includes('internal medicine')) return { icon: Stethoscope, color: 'text-blue-400' };
-    if (s.includes('uro-oncologist')) return { icon: ShieldAlert, color: 'text-rose-500' };
-    if (s.includes('robotic surgeon')) return { icon: Zap, color: 'text-purple-400' };
-    
-    return { icon: Stethoscope, color: 'text-blue-400' };
-};
+    if (s.includes('dermatologist') || s.includes('skin') || s.includes('trichologist') || s.includes('hair') || s.includes('cosmeto')) return Sparkles;
+    if (s.includes('cardiologist') || s.includes('heart') || s.includes('vascular')) return Heart;
+    if (s.includes('neurologist') || s.includes('brain') || s.includes('sleep')) return Brain;
+    if (s.includes('orthopedic') || s.includes('bone') || s.includes('joint') || s.includes('rheuma') || s.includes('rehab')) return Bone;
+    if (s.includes('pulmonologist') || s.includes('lung') || s.includes('chest')) return Wind;
+    if (s.includes('nephrologist') || s.includes('kidney') || s.includes('urol')) return Droplets;
+    if (s.includes('gastroenterologist') || s.includes('stomach') || s.includes('liver') || s.includes('hepat')) return Stethoscope;
+    if (s.includes('oncologist') || s.includes('cancer')) return ShieldAlert;
+    if (s.includes('pediatrician') || s.includes('child') || s.includes('neo')) return Baby;
+    if (s.includes('gynecologist') || s.includes('female') || s.includes('reproductive') || s.includes('fertility') || s.includes('ivf')) return Flower2;
+    if (s.includes('ophthalmologist') || s.includes('eye')) return Eye;
+    if (s.includes('psychiatrist') || s.includes('mental') || s.includes('psychol')) return BrainCircuit;
+    if (s.includes('dentist') || s.includes('teeth')) return Zap;
+    if (s.includes('ent') || s.includes('ear') || s.includes('hearing') || s.includes('audio')) return Ear;
+    if (s.includes('patho') || s.includes('lab') || s.includes('hemat') || s.includes('blood') || s.includes('micro')) return Microscope;
+    if (s.includes('emerg') || s.includes('er') || s.includes('toxic')) return Siren;
+    if (s.includes('surge') || s.includes('sciss')) return Scissors;
+    if (s.includes('radio') || s.includes('scan')) return Scan;
+    if (s.includes('anesthes') || s.includes('syringe')) return Syringe;
+    if (s.includes('physician') || s.includes('general')) return Stethoscope;
+    if (s.includes('podia') || s.includes('foot')) return Footprints;
+    if (s.includes('geriat') || s.includes('elder')) return UserCheck;
+    if (s.includes('infect') || s.includes('virus')) return ShieldCheck;
+    if (s.includes('sport')) return Dumbbell;
+    if (s.includes('pain')) return Thermometer;
+    if (s.includes('nutrition') || s.includes('diet')) return Utensils;
+    if (s.includes('genet') || s.includes('dna')) return Dna;
+    if (s.includes('speech')) return Languages;
+    if (s.includes('sex')) return HeartHandshake;
+    return Activity;
+}

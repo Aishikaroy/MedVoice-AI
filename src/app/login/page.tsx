@@ -3,7 +3,9 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { login, signup } from './actions'
-import { Activity, ShieldCheck, Mail, Lock, UserPlus, LogIn, AlertCircle, Loader2 } from 'lucide-react'
+import { Activity, ShieldCheck, Mail, Lock, UserPlus, LogIn, AlertCircle, Loader2, Phone, ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useFormStatus } from 'react-dom'
 
 function SubmitButton({ mode }: { mode: 'signIn' | 'signUp' }) {
@@ -44,8 +46,19 @@ function LoginContent() {
     setMode(prev => prev === 'signIn' ? 'signUp' : 'signIn')
   }
 
+  const router = useRouter()
+
   return (
     <div className="min-h-[calc(100vh-80px)] py-10 px-4 relative flex items-center justify-center">
+      {/* Gold/Black Luxury Back Button */}
+      <Link
+        href="/"
+        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-6 py-3 rounded-full border border-amber-500/30 bg-black/80 backdrop-blur-md text-amber-500 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500 hover:text-black transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] group"
+      >
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+        Back to Home
+      </Link>
+
       {/* Background Elements */}
       <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-blue-600/[0.04] rounded-full blur-[130px] pointer-events-none"></div>
       <div className="absolute bottom-1/4 right-1/3 w-[400px] h-[400px] bg-violet-600/[0.04] rounded-full blur-[110px] pointer-events-none"></div>
@@ -133,6 +146,26 @@ function LoginContent() {
                     required 
                     className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3.5 pl-11 pr-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/70 focus:border-transparent transition-all duration-300 shadow-inner group-hover:border-white/20 hover:bg-slate-900/70"
                     placeholder="••••••••"
+                  />
+                </div>
+              </div>
+            )}
+
+            {mode === 'signUp' && (
+              <div className="space-y-2 relative group anim-item mt-4">
+                <label htmlFor="phone" className="text-xs font-semibold text-slate-300 uppercase tracking-wider ml-1">Phone Number</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Phone className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                  </div>
+                  <input 
+                    id="phone" 
+                    name="phone" 
+                    type="tel" 
+                    autoComplete="tel"
+                    required 
+                    className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3.5 pl-11 pr-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/70 focus:border-transparent transition-all duration-300 shadow-inner group-hover:border-white/20 hover:bg-slate-900/70"
+                    placeholder="+1 (555) 000-0000"
                   />
                 </div>
               </div>

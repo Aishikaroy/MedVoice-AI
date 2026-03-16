@@ -1,4 +1,17 @@
 {
     "git.ignoreLimitWarning": true,
-    "css.lint.unknownAtRules": "ignore"
+    "css.lint.unknownAtRules": "ignore",
+    "python.defaultInterpreterPath": "C:\\Program Files\\Python313\\python.exe",
+    "python.analysis.pythonPath": "C:\\Program Files\\Python313\\python.exe",
+    "python.analysis.extraPaths": [
+        "c:\\Users\\AISHIKA ROY\\OneDrive\\Documents\\Desktop\\MedVoiceAi-master (1)\\MedVoiceAi-master",
+        "c:\\Users\\AISHIKA ROY\\OneDrive\\Documents\\Desktop\\MedVoiceAi-master (1)\\MedVoiceAi-master\\.venv\\Lib\\site-packages",
+        "C:\\Program Files\\Python313\\Lib\\site-packages"
+    ],
+    "python.analysis.useLibraryCodeForTypes": true,
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.typeCheckingMode": "basic",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "python.languageServer": "Pylance"
 }

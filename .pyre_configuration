@@ -1,0 +1,12 @@
+{
+  "source_directories": [
+    "."
+  ],
+  "search_path": [
+    "C:/Program Files/Python313/Lib/site-packages",
+    "C:/Users/AISHIKA ROY/AppData/Roaming/Python/Python313/site-packages",
+    {"site-package": "requests"},
+    {"site-package": "supabase"},
+    {"site-package": "dotenv"}
+  ]
+}

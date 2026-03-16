@@ -1,0 +1,22 @@
+{
+    "venvPath": ".",
+    "venv": ".venv",
+    "pythonVersion": "3.13",
+    "include": [
+        "backend",
+        "scripts"
+    ],
+    "exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        ".venv"
+    ],
+    "extraPaths": [
+        "C:\\Users\\AISHIKA ROY\\AppData\\Roaming\\Python\\Python313\\site-packages",
+        "C:\\Program Files\\Python313\\Lib\\site-packages",
+        "C:\\Program Files\\Python313\\Lib",
+        "."
+    ],
+    "typeCheckingMode": "basic"
+}
+

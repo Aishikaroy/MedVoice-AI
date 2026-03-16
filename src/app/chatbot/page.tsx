@@ -3,10 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import nextDynamic from 'next/dynamic';
 
-// Force the page to be dynamic so Vercel doesn't "prerender" it
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
-
 // Import ChatbotUI dynamically with SSR disabled
 const ChatbotUI = nextDynamic(() => import('./ChatbotUI'), { 
     ssr: false,
@@ -40,7 +36,7 @@ export default function ChatbotPage() {
             <div className="flex-1 transition-all duration-500 relative z-10 w-full text-white">
                 <ChatbotUI 
                     selectedConversationId={selectedConversationId}
-                    onConversationChange={(id: string | null) => setSelectedConversationId(id)}
+                    onConversationChangeAction={(id: string | null) => setSelectedConversationId(id)}
                 />
             </div>
         </div>

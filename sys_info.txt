@@ -1,0 +1,10 @@
+executable: C:\Program Files\Python313\python.exe
+requests: C:\Users\AISHIKA ROY\AppData\Roaming\Python\Python313\site-packages\requests\__init__.py
+paths:
+
+C:\Program Files\Python313\python313.zip
+C:\Program Files\Python313\DLLs
+C:\Program Files\Python313\Lib
+C:\Program Files\Python313
+C:\Users\AISHIKA ROY\AppData\Roaming\Python\Python313\site-packages
+C:\Program Files\Python313\Lib\site-packages

@@ -1,0 +1,9 @@
+﻿c:\Users\AISHIKA ROY\OneDrive\Documents\Desktop\MedVoiceAi-master (1)\MedVoiceAi-master\backend\orchestrator.py
+  c:\Users\AISHIKA ROY\OneDrive\Documents\Desktop\MedVoiceAi-master (1)\MedVoiceAi-master\backend\orchestrator.py:66:9 - error: No parameter named "openai_api_key" (reportCallIssue)
+  c:\Users\AISHIKA ROY\OneDrive\Documents\Desktop\MedVoiceAi-master (1)\MedVoiceAi-master\backend\orchestrator.py:67:9 - error: No parameter named "openai_api_base" (reportCallIssue)
+  c:\Users\AISHIKA ROY\OneDrive\Documents\Desktop\MedVoiceAi-master (1)\MedVoiceAi-master\backend\orchestrator.py:69:9 - error: No parameter named "max_tokens" (reportCallIssue)
+  c:\Users\AISHIKA ROY\OneDrive\Documents\Desktop\MedVoiceAi-master (1)\MedVoiceAi-master\backend\orchestrator.py:70:9 - error: No parameter named "request_timeout" (reportCallIssue)
+  c:\Users\AISHIKA ROY\OneDrive\Documents\Desktop\MedVoiceAi-master (1)\MedVoiceAi-master\backend\orchestrator.py:148:32 - error: Argument of type "AIMessage" cannot be assigned to parameter "object" of type "SystemMessage" in function "append"
+  ┬á┬á"AIMessage" is not assignable to "SystemMessage" (reportArgumentType)
+5 errors, 0 warnings, 0 informations
+

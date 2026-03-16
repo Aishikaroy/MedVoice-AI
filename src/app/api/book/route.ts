@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       return new Response('Unauthorized', { status: 401 });
     }
 
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8001';
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
     
     // 1. Save to Supabase for local record persistence
     const { error: dbError } = await supabase.from('appointments').insert({
